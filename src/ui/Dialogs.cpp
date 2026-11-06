@@ -32,7 +32,8 @@ JsonPickerDialog::JsonPickerDialog(Project *project, QWidget *parent) : QDialog(
     setWindowTitle(tr("Select a JSON file"));
     resize(640, 480);
     auto *l = new QVBoxLayout(this);
-    auto *intro = new QLabel(tr("Choose the JSON data file to edit. Files without a class will ask for one next."), this);
+    auto *intro = new QLabel(tr("Choose the JSON file to edit. Files that are not linked yet will ask for a class next "
+                                  "(or to be edited as plain JSON)."), this);
     intro->setWordWrap(true);
     l->addWidget(intro);
     m_search = new QLineEdit(this);
@@ -71,7 +72,7 @@ void JsonPickerDialog::fill()
         it->setData(0, Qt::UserRole, res);
         auto link = m_project->config().links.constFind(res);
         if (link != m_project->config().links.cend()) {
-            it->setText(1, m_project->schema().displayName(link->classKey));
+            it->setText(1, link->plain ? tr("Plain JSON") : m_project->schema().displayName(link->classKey));
         } else {
             it->setText(1, tr("— not linked —"));
             it->setForeground(1, palette().brush(QPalette::PlaceholderText));
@@ -91,7 +92,9 @@ ClassPickerDialog::ClassPickerDialog(Project *project, const QString &jsonResPat
     resize(900, 600);
     auto *l = new QVBoxLayout(this);
     auto *intro = new QLabel(tr("Which class describes the objects stored in <b>%1</b>? "
-                                "Only the variables of that class (and its parents) will be allowed in the file.")
+                                "Only the variables of that class (and its parents) will be allowed in the file.<br>"
+                                "If the file is not made of class objects, choose <b>Edit as Plain JSON</b> to edit "
+                                "any value freely, without checks.")
                                  .arg(jsonResPath.toHtmlEscaped()),
                              this);
     intro->setWordWrap(true);
@@ -142,6 +145,12 @@ ClassPickerDialog::ClassPickerDialog(Project *project, const QString &jsonResPat
 
     auto *bb = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, this);
     bb->button(QDialogButtonBox::Ok)->setText(tr("Link"));
+    auto *plain = bb->addButton(tr("Edit as Plain JSON"), QDialogButtonBox::ActionRole);
+    plain->setToolTip(tr("Do not link the file to a class: edit it as plain JSON, with no validation."));
+    connect(plain, &QPushButton::clicked, this, [this] {
+        m_plain = true;
+        accept();
+    });
     l->addWidget(bb);
     connect(bb, &QDialogButtonBox::accepted, this, [this] {
         if (currentKey().isEmpty()) {
@@ -326,6 +335,11 @@ LinkInfo ClassPickerDialog::link() const
 {
     LinkInfo l;
     l.json = m_json;
+    if (m_plain) {
+        l.plain = true;
+        l.shape = m_shape->currentData().toString();
+        return l;
+    }
     l.classKey = currentKey();
     if (const ClassInfo *c = m_project->registry().get(l.classKey))
         l.scriptPath = c->scriptPath;

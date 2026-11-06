@@ -56,6 +56,7 @@ private:
     QComboBox *m_keyField;
     QString m_initialKeyField;
     QString m_detectedShape;
+    bool m_plain = false;
 };
 
 // Application and project settings.

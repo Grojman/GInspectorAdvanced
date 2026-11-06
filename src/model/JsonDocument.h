@@ -40,6 +40,8 @@ public:
     QString resPath() const { return m_resPath; }
     QString fileName() const;
     const LinkInfo &link() const { return m_link; }
+    // Edited as plain JSON: no class, no validation.
+    bool isPlain() const { return m_link.plain; }
     void setLink(const LinkInfo &l) { m_link = l; }
     Shape shape() const { return m_shape; }
     const JValue &root() const { return m_root; }

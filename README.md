@@ -23,7 +23,8 @@ Runs on **Windows and Linux** (Qt 6 / C++17).
 - **Open a Godot project** (any folder with a `project.godot`). Every `.gd` and `.cs` script is scanned for classes.
 - **Pick a JSON file, then its class.** The class can be a project script with `class_name`, a script without
   `class_name` (referenced by path), an inner class (`Outer.Inner`), a C# class, a built-in Godot class, or
-  any script file you browse to.
+  any script file you browse to. Files that are not made of class objects can be edited as **plain JSON**,
+  with no class and no checks.
 - **`ginspector.json`** is written at the project root. It records which JSON is linked to which class, so you
   only choose once.
 - **Cards** for each item: thumbnail (from any `res://` image path in the item), title, a summary of its
@@ -123,6 +124,7 @@ If the file is not linked yet, the class picker opens:
 - **Project classes**: every GDScript / C# class found in the project, including inner classes.
 - **Godot built-in classes**: `Resource`, `Node2D`, `Sprite2D`…
 - **Browse for a script file…**: any `.gd` / `.cs` file, even one outside the project.
+- **Edit as Plain JSON**: no class at all. See [Plain JSON files](#plain-json-files) below.
 
 The right side previews the fields that will be allowed, with their types and restrictions. Below it, choose
 how the items are stored. The app detects this for you:
@@ -144,6 +146,18 @@ you selected the wrong class. You can then pick another one, or keep the current
 ask again for that file during the session.
 
 ![Wrong class prompt](docs/wrong_class.png)
+
+#### Plain JSON files
+
+Not every JSON file is made of class objects (settings, translations, level lists…). Press **Edit as Plain JSON**
+in the class picker, or in the inspector of a file that is not linked, to edit the file without a class:
+
+- every value shows its JSON type (`null`, `bool`, `int`, `float`, `String`, `Array`, `Object`). You can change
+  the type, edit the value, rename or remove fields, and add fields or elements anywhere;
+- nothing is checked: no problems, no badges, no warnings;
+- the file can hold any value at the root, including a single number or string.
+
+The choice is saved in `ginspector.json` as `"plain": true`. Use **Link to Class…** to link a class to the file later.
 
 ### 4. Edit
 
@@ -240,6 +254,7 @@ team shares the links.
 | Key | Meaning |
 |---|---|
 | `links.<json>.class` | class name, `res://path.gd` for scripts without `class_name`, or `Outer.Inner` |
+| `links.<json>.plain` | `true` for files edited as plain JSON, with no class (instead of `class` / `script`) |
 | `links.<json>.script` | where the class lives (used to find it again if it is renamed or outside the project) |
 | `links.<json>.shape` | `dictionary`, `array` or `single` |
 | `links.<json>.key_field` | dictionary layout: variable filled from the key |

@@ -127,6 +127,13 @@ QVariant CardModel::data(const QModelIndex &index, int role) const
         return m_doc->itemTitle(row);
     case SubtitleRole: {
         const QString declared = m_doc->link().classKey;
+        if (m_doc->isPlain()) {
+            if (it.value.isObject())
+                return tr("%n field(s)", nullptr, it.value.size());
+            if (it.value.isArray())
+                return tr("%n element(s)", nullptr, it.value.size());
+            return it.value.typeName();
+        }
         if (declared.isEmpty())
             return tr("not linked");
         const QString actual = m_project->schema().actualClass(it.value, declared);
@@ -144,7 +151,7 @@ QVariant CardModel::data(const QModelIndex &index, int role) const
     case SummaryRole: {
         QStringList out;
         if (!it.value.isObject())
-            return QStringList{tr("not an object: %1").arg(it.value.preview(30))};
+            return QStringList{m_doc->isPlain() ? it.value.preview(30) : tr("not an object: %1").arg(it.value.preview(30))};
         for (const JMember &m : it.value.members()) {
             if (titleFields().contains(m.key) || (m.value.isString() && isImagePath(m.value.toString())))
                 continue;

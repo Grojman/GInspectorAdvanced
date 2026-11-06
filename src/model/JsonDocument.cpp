@@ -94,6 +94,8 @@ void JsonDocument::applyLink(const LinkInfo &link, const QStringList &classField
         m_shape = m_root.isObject() ? detectShape(m_root, classFields) : Shape::Array;
     if (m_shape != Shape::Array && m_root.isArray())
         m_shape = Shape::Array;
+    if (link.plain && !m_root.isContainer())
+        m_shape = Shape::Single; // a bare value: the whole file is the item
     m_link.shape = shapeName(m_shape);
 
     m_items.clear();
@@ -107,7 +109,8 @@ void JsonDocument::applyLink(const LinkInfo &link, const QStringList &classField
             m_items << DocItem{m.key, m.value};
         break;
     case Shape::Single: {
-        JValue v = m_root.isObject() ? m_root : JValue::object();
+        // Plain JSON files may hold any value at the root (a number, a string…).
+        JValue v = m_root.isObject() || link.plain ? m_root : JValue::object();
         m_items << DocItem{QString(), v};
         break;
     }

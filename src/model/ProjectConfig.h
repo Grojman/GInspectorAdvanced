@@ -14,6 +14,7 @@ struct LinkInfo
     QString scriptPath; // res:// path of the script (empty for builtin classes)
     QString shape;      // "dictionary" ({id: item}), "array" ([item, ...]) or "single" (one item)
     QString keyField;   // dictionary shape: class field filled from the key (e.g. "id"), hidden in the inspector
+    bool plain = false; // edited as plain JSON, without a class (classKey and scriptPath are empty)
 };
 
 // How subclasses of a base class are told apart inside JSON objects:

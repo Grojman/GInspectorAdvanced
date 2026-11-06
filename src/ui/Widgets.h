@@ -23,6 +23,8 @@ public:
     void setTitle(const QString &t);
     void setSubtitle(const QString &t);
     QLabel *titleLabel() const { return m_title; }
+    // Shows `w` (e.g. an editable key) in place of the title label.
+    void setTitleWidget(QWidget *w);
     // Widgets added to the right side of the header.
     QHBoxLayout *headerLayout() const { return m_headerExtra; }
     QVBoxLayout *bodyLayout() const { return m_bodyLayout; }
@@ -39,6 +41,7 @@ private:
     QToolButton *m_arrow;
     QLabel *m_title;
     QLabel *m_subtitle;
+    QHBoxLayout *m_titleLayout = nullptr;
     QHBoxLayout *m_headerExtra;
     QWidget *m_body;
     QVBoxLayout *m_bodyLayout;

@@ -52,6 +52,7 @@ CollapsibleSection::CollapsibleSection(const QString &title, Style style, QWidge
     }
     m_title->setMinimumWidth(style == Value ? 120 : 0);
     hl->addWidget(m_title);
+    m_titleLayout = hl;
     m_subtitle = new QLabel(m_header);
     m_subtitle->setObjectName(QStringLiteral("dimLabel"));
     hl->addWidget(m_subtitle);
@@ -279,4 +280,12 @@ QToolButton *makeToolButton(const QString &text, const QString &tooltip, QWidget
 QIcon themeIcon(const QString &name)
 {
     return QIcon::fromTheme(name);
+}
+
+void CollapsibleSection::setTitleWidget(QWidget *w)
+{
+    m_title->hide();
+    w->setParent(m_header);
+    m_titleLayout->insertWidget(m_titleLayout->indexOf(m_title) + 1, w);
+    w->show();
 }

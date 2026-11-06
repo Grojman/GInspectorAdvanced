@@ -6,8 +6,11 @@
 #include <QHash>
 #include <QPointer>
 #include <QScrollArea>
+#include <functional>
 
 class CollapsibleSection;
+class QComboBox;
+class QHBoxLayout;
 class JsonDocument;
 class Project;
 class QLabel;
@@ -37,6 +40,8 @@ signals:
     void statusMessage(const QString &text);
     // The user asked to link the JSON file to a different class.
     void changeClassRequested();
+    // The user asked to edit the JSON file as plain JSON, without a class.
+    void plainRequested();
 
 private:
     struct Row
@@ -58,6 +63,18 @@ private:
     void trackSection(CollapsibleSection *sec, const QString &key, bool def);
 
     void buildHeader(QVBoxLayout *into);
+    // Line edit for the key of the current item (dictionary files).
+    QWidget *itemKeyEditor(QWidget *parent);
+    // Shown when the file has no class: offers to link one or to edit it as plain JSON.
+    void buildUnlinked(QVBoxLayout *into);
+
+    // Plain JSON (no class): any value can be edited, added or removed, with no checks.
+    using ExtraButtons = std::function<void(QWidget *parent, QHBoxLayout *into)>;
+    void buildPlainHeader(QVBoxLayout *into);
+    void buildPlainBody(QVBoxLayout *into, const JPath &path, const JValue &v, int depth);
+    QWidget *plainValue(const JPath &path, QWidget *label, const JValue &v, int depth, const ExtraButtons &extras);
+    QComboBox *plainTypeCombo(const JPath &path, const JValue &v, QWidget *parent);
+    QToolButton *plainAddButton(const JPath &path, QWidget *parent, CollapsibleSection *sec);
     void buildFields(QVBoxLayout *into, const JPath &base, const JValue &obj, const QString &classKey,
                      const QString &declaredKey, int depth, bool root);
     void buildUnknownKeys(QVBoxLayout *into, const JPath &base, const JValue &obj, const QString &classKey,

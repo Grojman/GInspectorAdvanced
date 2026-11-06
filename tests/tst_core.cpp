@@ -281,6 +281,67 @@ private slots:
         QCOMPARE(after.readAll(), before);
         QVERIFY(QFile::exists(path + QStringLiteral(".bak")));
     }
+
+    void plainDocuments()
+    {
+        QTemporaryDir dir;
+        auto write = [&](const QString &name, const QByteArray &text) {
+            QFile f(dir.filePath(name));
+            QVERIFY(f.open(QIODevice::WriteOnly));
+            f.write(text);
+        };
+        auto open = [&](const QString &name, JsonDocument &doc) {
+            QString err;
+            QVERIFY(doc.load(&err));
+            LinkInfo l;
+            l.plain = true;
+            doc.applyLink(l, {});
+            Q_UNUSED(name);
+        };
+
+        // A bare value at the root is one item and is written back unchanged.
+        write(QStringLiteral("n.json"), "42\n");
+        JsonDocument num(dir.filePath(QStringLiteral("n.json")), QStringLiteral("res://n.json"));
+        open(QStringLiteral("n.json"), num);
+        QCOMPARE(num.shape(), JsonDocument::Shape::Single);
+        QCOMPARE(num.count(), 1);
+        QCOMPARE(num.item(0).value.toInt(), qint64(42));
+        QString err;
+        QVERIFY(num.save(false, &err));
+        QFile nf(dir.filePath(QStringLiteral("n.json")));
+        QVERIFY(nf.open(QIODevice::ReadOnly));
+        QCOMPARE(nf.readAll().trimmed(), QByteArray("42"));
+
+        // Arrays of anything are split into items.
+        write(QStringLiteral("a.json"), "[1, \"two\", {\"x\": 3}]\n");
+        JsonDocument arr(dir.filePath(QStringLiteral("a.json")), QStringLiteral("res://a.json"));
+        open(QStringLiteral("a.json"), arr);
+        QCOMPARE(arr.shape(), JsonDocument::Shape::Array);
+        QCOMPARE(arr.count(), 3);
+
+        // An object of mixed values is a single item.
+        write(QStringLiteral("o.json"), "{\"volume\": 0.5, \"name\": \"x\"}\n");
+        JsonDocument obj(dir.filePath(QStringLiteral("o.json")), QStringLiteral("res://o.json"));
+        open(QStringLiteral("o.json"), obj);
+        QCOMPARE(obj.shape(), JsonDocument::Shape::Single);
+
+        // The plain flag survives ginspector.json.
+        ProjectConfig cfg;
+        QVERIFY(cfg.load(dir.path()));
+        LinkInfo l;
+        l.json = QStringLiteral("res://o.json");
+        l.plain = true;
+        l.shape = QStringLiteral("single");
+        cfg.links.insert(l.json, l);
+        cfg.varScope = VarScope::Public;
+        QVERIFY(cfg.save());
+        ProjectConfig again;
+        QVERIFY(again.load(dir.path()));
+        QVERIFY(again.links.contains(l.json));
+        QVERIFY(again.links.value(l.json).plain);
+        QVERIFY(again.links.value(l.json).classKey.isEmpty());
+        QVERIFY(again.varScope == VarScope::Public);
+    }
 };
 
 QTEST_GUILESS_MAIN(TstCore)

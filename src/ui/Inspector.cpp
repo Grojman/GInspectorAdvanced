@@ -237,7 +237,10 @@ void Inspector::rebuild()
     layout->setContentsMargins(Theme::PageMargin, Theme::PageMargin, Theme::PageMargin, Theme::PageMargin);
     layout->setSpacing(Theme::SectionSpacing);
 
-    if (!m_doc || m_item < 0 || m_item >= m_doc->count()) {
+    const bool plain = m_doc && m_doc->isPlain();
+    if (m_doc && !plain && (m_doc->link().classKey.isEmpty() || !m_reg->get(m_doc->link().classKey))) {
+        buildUnlinked(layout);
+    } else if (!m_doc || m_item < 0 || m_item >= m_doc->count()) {
         auto *l = new QLabel(m_doc ? tr("Select an item to edit its values.")
                                    : tr("No JSON file opened.\nPick one in the Files panel or with File ▸ Open JSON…"),
                              content);
@@ -246,14 +249,15 @@ void Inspector::rebuild()
         layout->addStretch(1);
         layout->addWidget(l);
         layout->addStretch(2);
-    } else if (m_doc->link().classKey.isEmpty() || !m_reg->get(m_doc->link().classKey)) {
-        auto *l = new QLabel(tr("This file is not linked to a class (or its class was not found).\n"
-                                "Use Project ▸ Link JSON to Class… to choose one."), content);
-        l->setAlignment(Qt::AlignCenter);
-        l->setWordWrap(true);
+    } else if (plain) {
+        buildPlainHeader(layout);
+        const JValue itemVal = m_doc->item(m_item).value;
+        if (itemVal.isContainer()) {
+            buildPlainBody(layout, {}, itemVal, 0);
+        } else {
+            layout->addWidget(plainValue({}, makeLabel(tr("Value"), 0, content), itemVal, 0, {}));
+        }
         layout->addStretch(1);
-        layout->addWidget(l);
-        layout->addStretch(2);
     } else {
         buildHeader(layout);
         const JValue itemVal = m_doc->item(m_item).value;
@@ -272,6 +276,34 @@ void Inspector::rebuild()
     refreshStates();
     QTimer::singleShot(0, this, [this, scroll] { verticalScrollBar()->setValue(scroll); });
     Q_UNUSED(focus);
+}
+
+QWidget *Inspector::itemKeyEditor(QWidget *parent)
+{
+    auto *key = new QLineEdit(m_doc->item(m_item).key, parent);
+    key->setToolTip(tr("The key of this item in the JSON object. Must be unique."));
+    connect(key, &QLineEdit::editingFinished, this, [this, key] {
+        const QString k = key->text().trimmed();
+        const QString old = m_doc->item(m_item).key;
+        if (k == old)
+            return;
+        QString err;
+        if (k.isEmpty())
+            err = tr("The key cannot be empty.");
+        for (int i = 0; i < m_doc->count() && err.isEmpty(); ++i)
+            if (i != m_item && m_doc->item(i).key == k)
+                err = tr("Another item already uses the key \"%1\".").arg(k);
+        if (!err.isEmpty()) {
+            key->setText(old);
+            emit statusMessage(err);
+            return;
+        }
+        m_committing = true;
+        m_doc->undoStack()->push(new RenameItemCommand(m_doc, m_item, k));
+        m_committing = false;
+        scheduleRebuild();
+    });
+    return key;
 }
 
 void Inspector::buildHeader(QVBoxLayout *into)
@@ -302,30 +334,7 @@ void Inspector::buildHeader(QVBoxLayout *into)
                                                                     : tr("Key (%1)").arg(m_doc->link().keyField),
                                   0, box),
                         r, 0);
-        auto *key = new QLineEdit(it.key, box);
-        key->setToolTip(tr("The key of this item in the JSON object. Must be unique."));
-        connect(key, &QLineEdit::editingFinished, this, [this, key] {
-            const QString k = key->text().trimmed();
-            const QString old = m_doc->item(m_item).key;
-            if (k == old)
-                return;
-            QString err;
-            if (k.isEmpty())
-                err = tr("The key cannot be empty.");
-            for (int i = 0; i < m_doc->count() && err.isEmpty(); ++i)
-                if (i != m_item && m_doc->item(i).key == k)
-                    err = tr("Another item already uses the key \"%1\".").arg(k);
-            if (!err.isEmpty()) {
-                key->setText(old);
-                emit statusMessage(err);
-                return;
-            }
-            m_committing = true;
-            m_doc->undoStack()->push(new RenameItemCommand(m_doc, m_item, k));
-            m_committing = false;
-            scheduleRebuild();
-        });
-        grid->addWidget(key, r++, 1, 1, 2);
+        grid->addWidget(itemKeyEditor(box), r++, 1, 1, 2);
     }
 
     grid->addWidget(makeLabel(tr("Class"), 0, box), r, 0);
@@ -1450,8 +1459,8 @@ CollapsibleSection *Inspector::objectSection(const JPath &path, const QString &l
 void Inspector::refreshStates()
 {
     m_issues.clear();
-    if (!m_doc || m_item < 0 || m_item >= m_doc->count())
-        return;
+    if (!m_doc || m_item < 0 || m_item >= m_doc->count() || m_doc->isPlain())
+        return; // plain JSON is never validated
     Validator val(*m_schema);
     const QList<Issue> issues =
         val.validateItem(m_doc->item(m_item).value, m_doc->link().classKey, m_item, m_doc->link().keyField);
@@ -1532,4 +1541,364 @@ void Inspector::reveal(const JPath &path)
         if (QWidget *child = anchor->findChild<QLineEdit *>())
             child->setFocus();
     });
+}
+
+// ---------------------------------------------------------------- No class / plain JSON
+
+void Inspector::buildUnlinked(QVBoxLayout *into)
+{
+    QWidget *parent = into->parentWidget();
+    const QString cls = m_doc->link().classKey;
+    auto *l = new QLabel(cls.isEmpty() ? tr("<b>%1</b> is not linked to a class.").arg(m_doc->fileName().toHtmlEscaped())
+                                       : tr("The class <b>%1</b> of %2 was not found.")
+                                             .arg(cls.toHtmlEscaped(), m_doc->fileName().toHtmlEscaped()),
+                         parent);
+    l->setAlignment(Qt::AlignCenter);
+    l->setWordWrap(true);
+    auto *hint = new QLabel(tr("Link it to the class that describes its items, or edit it as plain JSON "
+                               "(any value, no checks)."),
+                            parent);
+    hint->setAlignment(Qt::AlignCenter);
+    hint->setWordWrap(true);
+    hint->setObjectName(QStringLiteral("dimLabel"));
+    auto *buttons = new QHBoxLayout();
+    auto *link = new QPushButton(tr("Link to Class…"), parent);
+    auto *plain = new QPushButton(tr("Edit as Plain JSON"), parent);
+    connect(link, &QPushButton::clicked, this, &Inspector::changeClassRequested);
+    connect(plain, &QPushButton::clicked, this, &Inspector::plainRequested);
+    buttons->addStretch(1);
+    buttons->addWidget(link);
+    buttons->addWidget(plain);
+    buttons->addStretch(1);
+    into->addStretch(1);
+    into->addWidget(l);
+    into->addWidget(hint);
+    into->addLayout(buttons);
+    into->addStretch(2);
+}
+
+namespace {
+
+enum PlainType { PNull, PBool, PInt, PFloat, PString, PArray, PObject };
+
+int plainTypeOf(const JValue &v)
+{
+    switch (v.type()) {
+    case JValue::Bool: return PBool;
+    case JValue::Number: return v.hasIntLexeme() ? PInt : PFloat;
+    case JValue::String: return PString;
+    case JValue::Array: return PArray;
+    case JValue::Object: return PObject;
+    default: return PNull;
+    }
+}
+
+// Converts a value to another JSON type, keeping what can be kept.
+JValue convertPlain(const JValue &v, int type)
+{
+    switch (type) {
+    case PBool:
+        return JValue(v.isNumber() ? v.toDouble() != 0.0 : v.isString() ? v.toString() == QLatin1String("true") : v.toBool());
+    case PInt:
+        if (v.isNumber())
+            return JValue(qint64(std::llround(v.toDouble())));
+        return JValue(v.isString() ? v.toString().trimmed().toLongLong() : qint64(v.toBool() ? 1 : 0));
+    case PFloat:
+        if (v.isNumber())
+            return JValue::real(v.toDouble());
+        return JValue::real(v.isString() ? v.toString().trimmed().toDouble() : (v.toBool() ? 1.0 : 0.0));
+    case PString:
+        if (v.isString())
+            return v;
+        return JValue((v.isBool() || v.isNumber()) ? JsonIO::writeCompact(v) : QString());
+    case PArray: {
+        if (v.isArray())
+            return v;
+        JValue a = JValue::array();
+        if (v.isObject()) {
+            for (const JMember &m : v.members())
+                a.append(m.value);
+        } else if (!v.isNull() && !v.isUndefined()) {
+            a.append(v);
+        }
+        return a;
+    }
+    case PObject:
+        return v.isObject() ? v : JValue::object();
+    default:
+        return JValue::null();
+    }
+}
+
+// An empty value of the same type, used for new elements.
+JValue blankLike(const JValue &v)
+{
+    switch (plainTypeOf(v)) {
+    case PNull: return JValue::null();
+    case PBool: return JValue(false);
+    case PInt: return JValue(0);
+    case PFloat: return JValue::real(0.0);
+    case PArray: return JValue::array();
+    case PObject: return JValue::object();
+    default: return JValue(QString());
+    }
+}
+
+QString containerSummary(const JValue &v)
+{
+    return v.isObject() ? Inspector::tr("%n field(s)", nullptr, v.size()) : Inspector::tr("%n element(s)", nullptr, v.size());
+}
+
+} // namespace
+
+void Inspector::buildPlainHeader(QVBoxLayout *into)
+{
+    QWidget *parent = into->parentWidget();
+    const JValue v = m_doc->item(m_item).value;
+    auto *box = new QWidget(parent);
+    auto *grid = new QGridLayout(box);
+    grid->setContentsMargins(16, 14, 16, 14);
+    grid->setHorizontalSpacing(14);
+    grid->setVerticalSpacing(Theme::RowSpacing);
+    box->setObjectName(QStringLiteral("itemHeader"));
+    box->setAttribute(Qt::WA_StyledBackground, true);
+    int r = 0;
+
+    auto *title = new QLabel(m_doc->itemTitle(m_item), box);
+    QFont tf = title->font();
+    tf.setPointSizeF(tf.pointSizeF() * 1.6);
+    tf.setBold(true);
+    title->setFont(tf);
+    grid->addWidget(title, r++, 0, 1, 3);
+
+    if (m_doc->shape() == JsonDocument::Shape::Dictionary) {
+        grid->addWidget(makeLabel(tr("Key"), 0, box), r, 0);
+        grid->addWidget(itemKeyEditor(box), r++, 1, 1, 2);
+    }
+
+    grid->addWidget(makeLabel(tr("Class"), 0, box), r, 0);
+    auto *cl = new QLabel(tr("None: plain JSON"), box);
+    cl->setToolTip(tr("This file is not linked to a class: every value can be edited freely and nothing is checked."));
+    grid->addWidget(cl, r, 1);
+    auto *change = new QPushButton(tr("Link to Class…"), box);
+    change->setToolTip(tr("Link %1 to a class so its values are checked").arg(m_doc->fileName()));
+    connect(change, &QPushButton::clicked, this, &Inspector::changeClassRequested);
+    grid->addWidget(change, r++, 2);
+
+    if (v.isContainer()) {
+        // The type of the whole item, and a button to add a field / element to it.
+        grid->addWidget(makeLabel(tr("Value"), 0, box), r, 0);
+        auto *row = new QHBoxLayout();
+        row->setSpacing(Theme::FieldSpacing);
+        row->addWidget(plainTypeCombo({}, v, box));
+        auto *count = new QLabel(v.isObject() ? tr("%n field(s)", nullptr, v.size()) : tr("%n element(s)", nullptr, v.size()), box);
+        count->setObjectName(QStringLiteral("dimLabel"));
+        row->addWidget(count, 1);
+        auto *add = plainAddButton({}, box, nullptr);
+        row->addWidget(add);
+        grid->addLayout(row, r++, 1, 1, 2);
+    }
+    grid->setColumnStretch(1, 1);
+    into->addWidget(box);
+}
+
+QComboBox *Inspector::plainTypeCombo(const JPath &path, const JValue &v, QWidget *parent)
+{
+    auto *type = new QComboBox(parent);
+    WheelGuard::install(type);
+    type->addItems({tr("null"), tr("bool"), tr("int"), tr("float"), tr("String"), tr("Array"), tr("Object")});
+    type->setCurrentIndex(plainTypeOf(v));
+    type->setSizeAdjustPolicy(QComboBox::AdjustToContents);
+    type->setToolTip(tr("JSON type of this value"));
+    connect(type, qOverload<int>(&QComboBox::activated), this, [this, path](int i) {
+        const JValue cur = stored(path);
+        if (plainTypeOf(cur) == i)
+            return;
+        commitStructural(path, convertPlain(cur, i), tr("Change type"));
+    });
+    return type;
+}
+
+QToolButton *Inspector::plainAddButton(const JPath &path, QWidget *parent, CollapsibleSection *sec)
+{
+    const bool isObject = stored(path).isObject();
+    auto *add = makeToolButton(QStringLiteral("+"), isObject ? tr("Add a field") : tr("Add an element"), parent);
+    connect(add, &QToolButton::clicked, this, [this, path, sec] {
+        JValue c = stored(path);
+        if (c.isObject()) {
+            QString k = QStringLiteral("key");
+            for (int n = 2; c.contains(k); ++n)
+                k = QStringLiteral("key_%1").arg(n);
+            c.set(k, JValue(QString()));
+        } else if (c.isArray()) {
+            c.append(c.size() > 0 ? blankLike(c.at(c.size() - 1)) : JValue(QString()));
+        } else {
+            return;
+        }
+        if (sec) {
+            sec->setExpanded(true);
+            m_expanded.insert(sec->property("stateKey").toString(), true);
+        }
+        commitStructural(path, c, c.isObject() ? tr("Add field") : tr("Add element"));
+    });
+    return add;
+}
+
+void Inspector::buildPlainBody(QVBoxLayout *into, const JPath &path, const JValue &v, int depth)
+{
+    if (v.isObject()) {
+        for (const JMember &m : v.members()) {
+            const QString key = m.key;
+            auto *keyEdit = new QLineEdit(key, m_content);
+            keyEdit->setFixedWidth(labelWidth(depth));
+            keyEdit->setToolTip(tr("Field name"));
+            connect(keyEdit, &QLineEdit::editingFinished, this, [this, keyEdit, key, path] {
+                const QString nk = keyEdit->text();
+                if (nk == key)
+                    return;
+                JValue d = stored(path);
+                QString err;
+                if (nk.isEmpty())
+                    err = tr("Field names cannot be empty.");
+                else if (d.contains(nk))
+                    err = tr("The field \"%1\" already exists.").arg(nk);
+                if (!err.isEmpty()) {
+                    keyEdit->setText(key);
+                    emit statusMessage(err);
+                    return;
+                }
+                d.renameKey(key, nk);
+                commitStructural(path, d, tr("Rename field"));
+            });
+            auto extras = [this, path, key](QWidget *parent, QHBoxLayout *hl) {
+                auto *rm = makeToolButton(QStringLiteral("✕"), tr("Remove \"%1\"").arg(key), parent);
+                connect(rm, &QToolButton::clicked, this, [this, path, key] {
+                    JValue d = stored(path);
+                    d.remove(key);
+                    commitStructural(path, d, tr("Remove %1").arg(key));
+                });
+                hl->addWidget(rm);
+            };
+            into->addWidget(plainValue(path + PathSeg::k(key), keyEdit, m.value, depth, extras));
+        }
+    } else if (v.isArray()) {
+        const int n = v.size();
+        for (int i = 0; i < n; ++i) {
+            auto *idx = new QLabel(QString::number(i), m_content);
+            idx->setObjectName(QStringLiteral("dimLabel"));
+            idx->setFixedWidth(34);
+            auto extras = [this, path, i, n](QWidget *parent, QHBoxLayout *hl) {
+                auto edit = [this, path](std::function<void(JValue &)> fn, const QString &text) {
+                    JValue a = stored(path);
+                    fn(a);
+                    commitStructural(path, a, text);
+                };
+                auto *up = makeToolButton(QStringLiteral("▲"), tr("Move up"), parent);
+                up->setEnabled(i > 0);
+                auto *down = makeToolButton(QStringLiteral("▼"), tr("Move down"), parent);
+                down->setEnabled(i < n - 1);
+                auto *dup = makeToolButton(QStringLiteral("⧉"), tr("Duplicate"), parent);
+                auto *rm = makeToolButton(QStringLiteral("✕"), tr("Remove"), parent);
+                connect(up, &QToolButton::clicked, this, [edit, i] {
+                    edit([i](JValue &a) { std::swap(a.elements()[size_t(i)], a.elements()[size_t(i - 1)]); }, tr("Move element"));
+                });
+                connect(down, &QToolButton::clicked, this, [edit, i] {
+                    edit([i](JValue &a) { std::swap(a.elements()[size_t(i)], a.elements()[size_t(i + 1)]); }, tr("Move element"));
+                });
+                connect(dup, &QToolButton::clicked, this, [edit, i] {
+                    edit([i](JValue &a) { a.insert(i + 1, a.at(i)); }, tr("Duplicate element"));
+                });
+                connect(rm, &QToolButton::clicked, this, [edit, i] {
+                    edit([i](JValue &a) { a.removeAt(i); }, tr("Remove element"));
+                });
+                hl->addWidget(up);
+                hl->addWidget(down);
+                hl->addWidget(dup);
+                hl->addWidget(rm);
+            };
+            into->addWidget(plainValue(path + PathSeg::i(i), idx, v.at(i), depth, extras));
+        }
+    }
+    if (v.isContainer() && v.size() == 0) {
+        auto *empty = new QLabel(tr("Empty"), m_content);
+        empty->setObjectName(QStringLiteral("dimLabel"));
+        into->addWidget(empty);
+    }
+}
+
+QWidget *Inspector::plainValue(const JPath &path, QWidget *label, const JValue &v, int depth, const ExtraButtons &extras)
+{
+    Row row;
+    row.path = path;
+    row.revertable = false;
+    row.label = qobject_cast<QLabel *>(label);
+
+    if (v.isContainer()) {
+        auto *sec = new CollapsibleSection(QString(), CollapsibleSection::Value, m_content);
+        trackSection(sec, QStringLiteral("plain:") + pathPattern(path), depth < 1);
+        // [▾] [key] [type] n fields ........ [+] [buttons]
+        auto *title = new QWidget(sec);
+        auto *tl = new QHBoxLayout(title);
+        tl->setContentsMargins(0, 0, 0, 0);
+        tl->setSpacing(Theme::FieldSpacing);
+        if (label->minimumWidth() > 60)
+            label->setFixedWidth(label->minimumWidth() - 28); // room for the arrow, so values stay aligned
+        label->setParent(title);
+        tl->addWidget(label);
+        tl->addWidget(plainTypeCombo(path, v, title));
+        sec->setTitleWidget(title);
+        sec->setSubtitle(containerSummary(v));
+        sec->headerLayout()->addWidget(plainAddButton(path, sec, sec));
+        if (extras)
+            extras(sec, sec->headerLayout());
+        buildPlainBody(sec->bodyLayout(), path, v, depth + 1);
+        row.anchor = sec;
+        row.section = sec;
+        m_rows << row;
+        return sec;
+    }
+
+    auto *line = new QWidget(m_content);
+    auto *hl = new QHBoxLayout(line);
+    hl->setContentsMargins(0, 0, 0, 0);
+    hl->setSpacing(Theme::FieldSpacing);
+    label->setParent(line);
+    hl->addWidget(label);
+    hl->addWidget(plainTypeCombo(path, v, line));
+    QWidget *ed = nullptr;
+    switch (plainTypeOf(v)) {
+    case PBool: {
+        auto *cb = new QCheckBox(tr("On"), line);
+        cb->setChecked(v.toBool());
+        connect(cb, &QCheckBox::toggled, this, [this, path](bool b) { commit(path, JValue(b), tr("Toggle"), false); });
+        ed = cb;
+        break;
+    }
+    case PInt:
+        ed = intEditor(path, TypeRef(), PropertyHint(), v);
+        break;
+    case PFloat:
+        ed = floatEditor(path, PropertyHint(), v);
+        break;
+    case PString: {
+        auto *le = new QLineEdit(v.toString(), line);
+        connect(le, &QLineEdit::editingFinished, this, [this, le, path] {
+            commit(path, JValue(le->text()), tr("Edit text"), false);
+        });
+        ed = le;
+        break;
+    }
+    default: {
+        auto *nl = new QLabel(QStringLiteral("null"), line);
+        nl->setObjectName(QStringLiteral("dimLabel"));
+        ed = nl;
+    }
+    }
+    ed->setParent(line);
+    hl->addWidget(ed, 1);
+    if (extras)
+        extras(line, hl);
+    row.anchor = line;
+    m_rows << row;
+    return line;
 }

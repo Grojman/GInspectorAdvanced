@@ -350,6 +350,10 @@ void MainWindow::buildUi()
     });
     connect(m_inspector, &Inspector::statusMessage, this, [this](const QString &m) { statusBar()->showMessage(m, 6000); });
     connect(m_inspector, &Inspector::changeClassRequested, this, &MainWindow::changeClass);
+    connect(m_inspector, &Inspector::plainRequested, this, [this] {
+        if (m_doc && linkPlain(m_doc))
+            showDocument(m_doc);
+    });
 
     // Data files dock
     auto *filesDock = new QDockWidget(tr("Data Files"), this);
@@ -430,7 +434,8 @@ void MainWindow::updateActions()
 {
     const bool open = m_project->isOpen();
     const bool linked = m_doc && !m_doc->link().classKey.isEmpty() && m_project->registry().get(m_doc->link().classKey);
-    const bool multi = linked && m_doc->shape() != JsonDocument::Shape::Single;
+    const bool editable = linked || (m_doc && m_doc->isPlain());
+    const bool multi = editable && m_doc->shape() != JsonDocument::Shape::Single;
     const int row = currentItem();
     m_actCloseProject->setEnabled(open);
     m_actOpenJson->setEnabled(open);
@@ -459,7 +464,9 @@ void MainWindow::updateDocHeader()
         return;
     }
     const LinkInfo &l = m_doc->link();
-    QString cls = l.classKey.isEmpty() ? tr("<i>not linked</i>") : m_project->schema().displayName(l.classKey).toHtmlEscaped();
+    QString cls = l.plain               ? tr("plain JSON")
+                  : l.classKey.isEmpty() ? tr("<i>not linked</i>")
+                                         : m_project->schema().displayName(l.classKey).toHtmlEscaped();
     if (!l.classKey.isEmpty() && !m_project->registry().get(l.classKey))
         cls += tr(" <span style='color:#e5534b'>(class not found)</span>");
     QString shape;
@@ -503,7 +510,7 @@ void MainWindow::refreshFileTree()
         it->setToolTip(0, res);
         auto link = m_project->config().links.constFind(res);
         if (link != m_project->config().links.cend()) {
-            it->setText(1, m_project->schema().displayName(link->classKey));
+            it->setText(1, link->plain ? tr("Plain JSON") : m_project->schema().displayName(link->classKey));
         } else {
             it->setText(1, tr("—"));
             it->setForeground(1, palette().brush(QPalette::PlaceholderText));
@@ -659,6 +666,18 @@ bool MainWindow::linkDocument(JsonDocument *doc)
     ClassPickerDialog d(m_project, doc->resPath(), doc->link(), this);
     if (d.exec() != QDialog::Accepted)
         return false;
+    return applyLink(doc, d.link());
+}
+
+bool MainWindow::linkPlain(JsonDocument *doc)
+{
+    LinkInfo l;
+    l.plain = true; // shape left empty: detected from the file
+    return applyLink(doc, l);
+}
+
+bool MainWindow::applyLink(JsonDocument *doc, const LinkInfo &link)
+{
     if (doc->isModified()) {
         if (QMessageBox::question(this, tr("Link JSON"), tr("Changing the class discards the unsaved changes of %1. Continue?")
                                                             .arg(doc->fileName()))
@@ -668,8 +687,11 @@ bool MainWindow::linkDocument(JsonDocument *doc)
         m_project->reloadDocument(doc, &err);
     }
     QString err;
-    if (!m_project->link(doc, d.link(), &err))
+    if (!m_project->link(doc, link, &err))
         QMessageBox::warning(this, tr("Link JSON"), tr("Could not write %1:\n%2").arg(ProjectConfig::fileName(), err));
+    else if (doc->isPlain())
+        statusBar()->showMessage(tr("%1 is now edited as plain JSON (saved in %2).").arg(doc->fileName(), ProjectConfig::fileName()),
+                                 6000);
     else
         statusBar()->showMessage(tr("%1 is now linked to %2 (saved in %3).")
                                      .arg(doc->fileName(), m_project->schema().displayName(doc->link().classKey),
@@ -786,7 +808,13 @@ void MainWindow::refreshProblems()
 {
     m_problems->clear();
     if (!m_doc || m_doc->link().classKey.isEmpty() || !m_project->registry().get(m_doc->link().classKey)) {
-        m_problemSummary->setText(m_doc ? tr("Link the file to a class to validate it.") : QString());
+        QString text;
+        if (m_doc)
+            text = m_doc->isPlain() ? tr("Plain JSON: no class is linked, so nothing is checked.")
+                                    : tr("Link the file to a class to validate it.");
+        m_problemSummary->setText(text);
+        if (auto *dock = qobject_cast<QDockWidget *>(m_problems->parentWidget()->parentWidget()))
+            dock->setWindowTitle(tr("Problems"));
         return;
     }
     Validator val(m_project->schema());
@@ -987,7 +1015,17 @@ void MainWindow::addItem(const QString &classKeyIn)
     const QString cls = classKeyIn.isEmpty() ? declared : classKeyIn;
     QList<DocItem> items = m_doc->items();
     DocItem it;
-    it.value = m_project->schema().newObject(cls, declared);
+    if (m_doc->isPlain()) {
+        // Plain JSON: a new empty object, or an empty value like the other items when they are not objects.
+        const JValue &like = items.isEmpty() ? JValue::object() : items[currentItem() >= 0 ? currentItem() : items.size() - 1].value;
+        it.value = like.isArray() ? JValue::array() : like.isString() ? JValue(QString())
+                   : like.isNumber()                ? JValue(0)
+                   : like.isBool()                  ? JValue(false)
+                   : like.isNull()                  ? JValue::null()
+                                                    : JValue::object();
+    } else {
+        it.value = m_project->schema().newObject(cls, declared);
+    }
     it.value.setLayout(JValue::LayoutMultiline);
     if (m_doc->shape() == JsonDocument::Shape::Dictionary)
         it.key = m_doc->uniqueKey(QStringLiteral("new_item"));

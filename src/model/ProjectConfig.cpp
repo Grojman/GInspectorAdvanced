@@ -50,7 +50,13 @@ bool ProjectConfig::load(const QString &projectRoot, QString *error)
         l.scriptPath = m.value.value(QStringLiteral("script")).toString();
         l.shape = m.value.value(QStringLiteral("shape")).toString();
         l.keyField = m.value.value(QStringLiteral("key_field")).toString();
-        if (!l.classKey.isEmpty())
+        l.plain = m.value.value(QStringLiteral("plain")).toBool(false);
+        if (l.plain) {
+            l.classKey.clear();
+            l.scriptPath.clear();
+            l.keyField.clear();
+        }
+        if (!l.classKey.isEmpty() || l.plain)
             links.insert(l.json, l);
     }
     for (const JMember &m : doc.ref(QStringLiteral("polymorphism")).members()) {
@@ -82,7 +88,10 @@ bool ProjectConfig::save(QString *error) const
     for (const LinkInfo &l : links) {
         JValue o = JValue::object();
         o.setLayout(JValue::LayoutMultiline);
-        o.set(QStringLiteral("class"), JValue(l.classKey));
+        if (l.plain)
+            o.set(QStringLiteral("plain"), JValue(true));
+        else
+            o.set(QStringLiteral("class"), JValue(l.classKey));
         if (!l.scriptPath.isEmpty())
             o.set(QStringLiteral("script"), JValue(l.scriptPath));
         o.set(QStringLiteral("shape"), JValue(l.shape));

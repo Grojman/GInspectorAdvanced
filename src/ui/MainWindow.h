@@ -8,6 +8,7 @@ class CardFilter;
 class CardModel;
 class Inspector;
 class JsonDocument;
+struct LinkInfo;
 class Project;
 class QAction;
 class QCheckBox;
@@ -52,7 +53,11 @@ private:
 
     void chooseJson();
     void openJson(const QString &resPath);
+    // Asks for the class of a document (or plain JSON) and links it.
     bool linkDocument(JsonDocument *doc);
+    // Links a document as plain JSON, without a class.
+    bool linkPlain(JsonDocument *doc);
+    bool applyLink(JsonDocument *doc, const LinkInfo &link);
     void showDocument(JsonDocument *doc);
     void closeProject();
 
