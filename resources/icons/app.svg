@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- GInspectorAdvanced icon: a Godot-style robot head whose eyes are JSON braces. -->
+<svg xmlns="http://www.w3.org/2000/svg" width="256" height="256" viewBox="0 0 256 256">
+  <defs>
+    <linearGradient id="head" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#5a9fd6"/>
+      <stop offset="1" stop-color="#3f7fb3"/>
+    </linearGradient>
+  </defs>
+  <!-- ears / antennae -->
+  <circle cx="66" cy="58" r="24" fill="#478cbf"/>
+  <circle cx="190" cy="58" r="24" fill="#478cbf"/>
+  <!-- head -->
+  <rect x="20" y="48" width="216" height="186" rx="60" fill="url(#head)"/>
+  <!-- mouth with teeth -->
+  <rect x="52" y="178" width="152" height="30" rx="15" fill="#ffffff"/>
+  <rect x="98" y="178" width="10" height="30" fill="#3f7fb3"/>
+  <rect x="148" y="178" width="10" height="30" fill="#3f7fb3"/>
+  <!-- eyes -->
+  <circle cx="84" cy="112" r="38" fill="#ffffff"/>
+  <circle cx="172" cy="112" r="38" fill="#ffffff"/>
+  <!-- JSON braces as pupils -->
+  <path d="M96 88 C82 88 82 94 82 102 L82 106 C82 110 79 112 72 112 C79 112 82 114 82 118 L82 122 C82 130 82 136 96 136"
+        fill="none" stroke="#2b2d31" stroke-width="9" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M160 88 C174 88 174 94 174 102 L174 106 C174 110 177 112 184 112 C177 112 174 114 174 118 L174 122 C174 130 174 136 160 136"
+        fill="none" stroke="#2b2d31" stroke-width="9" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>

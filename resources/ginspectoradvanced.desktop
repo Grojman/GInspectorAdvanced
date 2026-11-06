@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=GInspectorAdvanced
+Comment=Visual inspector for Godot JSON data files
+Exec=GInspectorAdvanced
+Icon=ginspectoradvanced
+Categories=Development;
+Terminal=false

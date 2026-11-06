@@ -1,0 +1,869 @@
+{
+ "source": "curated",
+ "classes": [
+  {
+   "name": "Object",
+   "inherits": "",
+   "properties": []
+  },
+  {
+   "name": "RefCounted",
+   "inherits": "Object",
+   "properties": []
+  },
+  {
+   "name": "Resource",
+   "inherits": "RefCounted",
+   "properties": [
+    {
+     "name": "resource_local_to_scene",
+     "type": "bool"
+    },
+    {
+     "name": "resource_path",
+     "type": "String"
+    },
+    {
+     "name": "resource_name",
+     "type": "String"
+    },
+    {
+     "name": "resource_scene_unique_id",
+     "type": "String"
+    }
+   ]
+  },
+  {
+   "name": "Texture",
+   "inherits": "Resource",
+   "properties": []
+  },
+  {
+   "name": "Texture2D",
+   "inherits": "Texture",
+   "properties": []
+  },
+  {
+   "name": "CompressedTexture2D",
+   "inherits": "Texture2D",
+   "properties": []
+  },
+  {
+   "name": "ImageTexture",
+   "inherits": "Texture2D",
+   "properties": []
+  },
+  {
+   "name": "AtlasTexture",
+   "inherits": "Texture2D",
+   "properties": []
+  },
+  {
+   "name": "GradientTexture2D",
+   "inherits": "Texture2D",
+   "properties": []
+  },
+  {
+   "name": "NoiseTexture2D",
+   "inherits": "Texture2D",
+   "properties": []
+  },
+  {
+   "name": "AnimatedTexture",
+   "inherits": "Texture2D",
+   "properties": []
+  },
+  {
+   "name": "PlaceholderTexture2D",
+   "inherits": "Texture2D",
+   "properties": []
+  },
+  {
+   "name": "CanvasTexture",
+   "inherits": "Texture2D",
+   "properties": []
+  },
+  {
+   "name": "Texture3D",
+   "inherits": "Texture",
+   "properties": []
+  },
+  {
+   "name": "Cubemap",
+   "inherits": "Texture",
+   "properties": []
+  },
+  {
+   "name": "AudioStream",
+   "inherits": "Resource",
+   "properties": []
+  },
+  {
+   "name": "AudioStreamWAV",
+   "inherits": "AudioStream",
+   "properties": []
+  },
+  {
+   "name": "AudioStreamOggVorbis",
+   "inherits": "AudioStream",
+   "properties": []
+  },
+  {
+   "name": "AudioStreamMP3",
+   "inherits": "AudioStream",
+   "properties": []
+  },
+  {
+   "name": "AudioStreamRandomizer",
+   "inherits": "AudioStream",
+   "properties": []
+  },
+  {
+   "name": "PackedScene",
+   "inherits": "Resource",
+   "properties": []
+  },
+  {
+   "name": "Script",
+   "inherits": "Resource",
+   "properties": []
+  },
+  {
+   "name": "GDScript",
+   "inherits": "Script",
+   "properties": []
+  },
+  {
+   "name": "Shader",
+   "inherits": "Resource",
+   "properties": []
+  },
+  {
+   "name": "Material",
+   "inherits": "Resource",
+   "properties": []
+  },
+  {
+   "name": "ShaderMaterial",
+   "inherits": "Material",
+   "properties": []
+  },
+  {
+   "name": "CanvasItemMaterial",
+   "inherits": "Material",
+   "properties": []
+  },
+  {
+   "name": "BaseMaterial3D",
+   "inherits": "Material",
+   "properties": []
+  },
+  {
+   "name": "StandardMaterial3D",
+   "inherits": "BaseMaterial3D",
+   "properties": []
+  },
+  {
+   "name": "Font",
+   "inherits": "Resource",
+   "properties": []
+  },
+  {
+   "name": "FontFile",
+   "inherits": "Font",
+   "properties": []
+  },
+  {
+   "name": "SystemFont",
+   "inherits": "Font",
+   "properties": []
+  },
+  {
+   "name": "Theme",
+   "inherits": "Resource",
+   "properties": []
+  },
+  {
+   "name": "StyleBox",
+   "inherits": "Resource",
+   "properties": []
+  },
+  {
+   "name": "StyleBoxFlat",
+   "inherits": "StyleBox",
+   "properties": []
+  },
+  {
+   "name": "StyleBoxTexture",
+   "inherits": "StyleBox",
+   "properties": []
+  },
+  {
+   "name": "StyleBoxEmpty",
+   "inherits": "StyleBox",
+   "properties": []
+  },
+  {
+   "name": "Mesh",
+   "inherits": "Resource",
+   "properties": []
+  },
+  {
+   "name": "ArrayMesh",
+   "inherits": "Mesh",
+   "properties": []
+  },
+  {
+   "name": "PrimitiveMesh",
+   "inherits": "Mesh",
+   "properties": []
+  },
+  {
+   "name": "BoxMesh",
+   "inherits": "PrimitiveMesh",
+   "properties": []
+  },
+  {
+   "name": "SphereMesh",
+   "inherits": "PrimitiveMesh",
+   "properties": []
+  },
+  {
+   "name": "QuadMesh",
+   "inherits": "PrimitiveMesh",
+   "properties": []
+  },
+  {
+   "name": "SpriteFrames",
+   "inherits": "Resource",
+   "properties": []
+  },
+  {
+   "name": "Animation",
+   "inherits": "Resource",
+   "properties": []
+  },
+  {
+   "name": "AnimationLibrary",
+   "inherits": "Resource",
+   "properties": []
+  },
+  {
+   "name": "TileSet",
+   "inherits": "Resource",
+   "properties": []
+  },
+  {
+   "name": "Shape2D",
+   "inherits": "Resource",
+   "properties": []
+  },
+  {
+   "name": "RectangleShape2D",
+   "inherits": "Shape2D",
+   "properties": []
+  },
+  {
+   "name": "CircleShape2D",
+   "inherits": "Shape2D",
+   "properties": []
+  },
+  {
+   "name": "CapsuleShape2D",
+   "inherits": "Shape2D",
+   "properties": []
+  },
+  {
+   "name": "Shape3D",
+   "inherits": "Resource",
+   "properties": []
+  },
+  {
+   "name": "BoxShape3D",
+   "inherits": "Shape3D",
+   "properties": []
+  },
+  {
+   "name": "SphereShape3D",
+   "inherits": "Shape3D",
+   "properties": []
+  },
+  {
+   "name": "Image",
+   "inherits": "Resource",
+   "properties": []
+  },
+  {
+   "name": "JSON",
+   "inherits": "Resource",
+   "properties": []
+  },
+  {
+   "name": "Translation",
+   "inherits": "Resource",
+   "properties": []
+  },
+  {
+   "name": "Environment",
+   "inherits": "Resource",
+   "properties": []
+  },
+  {
+   "name": "InputEvent",
+   "inherits": "Resource",
+   "properties": []
+  },
+  {
+   "name": "LabelSettings",
+   "inherits": "Resource",
+   "properties": []
+  },
+  {
+   "name": "PhysicsMaterial",
+   "inherits": "Resource",
+   "properties": []
+  },
+  {
+   "name": "Noise",
+   "inherits": "Resource",
+   "properties": []
+  },
+  {
+   "name": "FastNoiseLite",
+   "inherits": "Noise",
+   "properties": []
+  },
+  {
+   "name": "Curve",
+   "inherits": "Resource",
+   "properties": [
+    {
+     "name": "min_value",
+     "type": "float"
+    },
+    {
+     "name": "max_value",
+     "type": "float"
+    },
+    {
+     "name": "bake_resolution",
+     "type": "int"
+    }
+   ]
+  },
+  {
+   "name": "Gradient",
+   "inherits": "Resource",
+   "properties": [
+    {
+     "name": "offsets",
+     "type": "PackedFloat32Array"
+    },
+    {
+     "name": "colors",
+     "type": "PackedColorArray"
+    }
+   ]
+  },
+  {
+   "name": "Node",
+   "inherits": "Object",
+   "properties": [
+    {
+     "name": "name",
+     "type": "StringName"
+    },
+    {
+     "name": "unique_name_in_owner",
+     "type": "bool"
+    },
+    {
+     "name": "scene_file_path",
+     "type": "String"
+    },
+    {
+     "name": "process_mode",
+     "type": "enum::Node.ProcessMode"
+    },
+    {
+     "name": "process_priority",
+     "type": "int"
+    },
+    {
+     "name": "process_physics_priority",
+     "type": "int"
+    },
+    {
+     "name": "editor_description",
+     "type": "String"
+    }
+   ],
+   "enums": [
+    {
+     "name": "ProcessMode",
+     "values": [
+      {
+       "name": "PROCESS_MODE_INHERIT",
+       "value": 0
+      },
+      {
+       "name": "PROCESS_MODE_PAUSABLE",
+       "value": 1
+      },
+      {
+       "name": "PROCESS_MODE_WHEN_PAUSED",
+       "value": 2
+      },
+      {
+       "name": "PROCESS_MODE_ALWAYS",
+       "value": 3
+      },
+      {
+       "name": "PROCESS_MODE_DISABLED",
+       "value": 4
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "name": "CanvasItem",
+   "inherits": "Node",
+   "properties": [
+    {
+     "name": "visible",
+     "type": "bool"
+    },
+    {
+     "name": "modulate",
+     "type": "Color"
+    },
+    {
+     "name": "self_modulate",
+     "type": "Color"
+    },
+    {
+     "name": "show_behind_parent",
+     "type": "bool"
+    },
+    {
+     "name": "top_level",
+     "type": "bool"
+    },
+    {
+     "name": "light_mask",
+     "type": "int"
+    },
+    {
+     "name": "visibility_layer",
+     "type": "int"
+    },
+    {
+     "name": "z_index",
+     "type": "int"
+    },
+    {
+     "name": "z_as_relative",
+     "type": "bool"
+    },
+    {
+     "name": "y_sort_enabled",
+     "type": "bool"
+    }
+   ]
+  },
+  {
+   "name": "Node2D",
+   "inherits": "CanvasItem",
+   "properties": [
+    {
+     "name": "position",
+     "type": "Vector2"
+    },
+    {
+     "name": "rotation",
+     "type": "float"
+    },
+    {
+     "name": "rotation_degrees",
+     "type": "float"
+    },
+    {
+     "name": "scale",
+     "type": "Vector2"
+    },
+    {
+     "name": "skew",
+     "type": "float"
+    }
+   ]
+  },
+  {
+   "name": "Sprite2D",
+   "inherits": "Node2D",
+   "properties": [
+    {
+     "name": "texture",
+     "type": "Texture2D"
+    },
+    {
+     "name": "centered",
+     "type": "bool"
+    },
+    {
+     "name": "offset",
+     "type": "Vector2"
+    },
+    {
+     "name": "flip_h",
+     "type": "bool"
+    },
+    {
+     "name": "flip_v",
+     "type": "bool"
+    },
+    {
+     "name": "hframes",
+     "type": "int"
+    },
+    {
+     "name": "vframes",
+     "type": "int"
+    },
+    {
+     "name": "frame",
+     "type": "int"
+    },
+    {
+     "name": "region_enabled",
+     "type": "bool"
+    },
+    {
+     "name": "region_rect",
+     "type": "Rect2"
+    }
+   ]
+  },
+  {
+   "name": "AnimatedSprite2D",
+   "inherits": "Node2D",
+   "properties": [
+    {
+     "name": "sprite_frames",
+     "type": "SpriteFrames"
+    },
+    {
+     "name": "animation",
+     "type": "StringName"
+    },
+    {
+     "name": "autoplay",
+     "type": "String"
+    },
+    {
+     "name": "frame",
+     "type": "int"
+    },
+    {
+     "name": "speed_scale",
+     "type": "float"
+    },
+    {
+     "name": "centered",
+     "type": "bool"
+    },
+    {
+     "name": "offset",
+     "type": "Vector2"
+    },
+    {
+     "name": "flip_h",
+     "type": "bool"
+    },
+    {
+     "name": "flip_v",
+     "type": "bool"
+    }
+   ]
+  },
+  {
+   "name": "CollisionObject2D",
+   "inherits": "Node2D",
+   "properties": []
+  },
+  {
+   "name": "Area2D",
+   "inherits": "CollisionObject2D",
+   "properties": []
+  },
+  {
+   "name": "PhysicsBody2D",
+   "inherits": "CollisionObject2D",
+   "properties": []
+  },
+  {
+   "name": "StaticBody2D",
+   "inherits": "PhysicsBody2D",
+   "properties": []
+  },
+  {
+   "name": "RigidBody2D",
+   "inherits": "PhysicsBody2D",
+   "properties": []
+  },
+  {
+   "name": "CharacterBody2D",
+   "inherits": "PhysicsBody2D",
+   "properties": []
+  },
+  {
+   "name": "Marker2D",
+   "inherits": "Node2D",
+   "properties": []
+  },
+  {
+   "name": "Camera2D",
+   "inherits": "Node2D",
+   "properties": []
+  },
+  {
+   "name": "TileMapLayer",
+   "inherits": "Node2D",
+   "properties": []
+  },
+  {
+   "name": "CollisionShape2D",
+   "inherits": "Node2D",
+   "properties": []
+  },
+  {
+   "name": "Timer",
+   "inherits": "Node",
+   "properties": []
+  },
+  {
+   "name": "AudioStreamPlayer",
+   "inherits": "Node",
+   "properties": []
+  },
+  {
+   "name": "AudioStreamPlayer2D",
+   "inherits": "Node2D",
+   "properties": []
+  },
+  {
+   "name": "CanvasLayer",
+   "inherits": "Node",
+   "properties": []
+  },
+  {
+   "name": "AnimationPlayer",
+   "inherits": "Node",
+   "properties": []
+  },
+  {
+   "name": "Control",
+   "inherits": "CanvasItem",
+   "properties": [
+    {
+     "name": "clip_contents",
+     "type": "bool"
+    },
+    {
+     "name": "custom_minimum_size",
+     "type": "Vector2"
+    },
+    {
+     "name": "position",
+     "type": "Vector2"
+    },
+    {
+     "name": "size",
+     "type": "Vector2"
+    },
+    {
+     "name": "rotation",
+     "type": "float"
+    },
+    {
+     "name": "scale",
+     "type": "Vector2"
+    },
+    {
+     "name": "pivot_offset",
+     "type": "Vector2"
+    },
+    {
+     "name": "tooltip_text",
+     "type": "String"
+    }
+   ]
+  },
+  {
+   "name": "Container",
+   "inherits": "Control",
+   "properties": []
+  },
+  {
+   "name": "BoxContainer",
+   "inherits": "Container",
+   "properties": []
+  },
+  {
+   "name": "VBoxContainer",
+   "inherits": "BoxContainer",
+   "properties": []
+  },
+  {
+   "name": "HBoxContainer",
+   "inherits": "BoxContainer",
+   "properties": []
+  },
+  {
+   "name": "MarginContainer",
+   "inherits": "Container",
+   "properties": []
+  },
+  {
+   "name": "PanelContainer",
+   "inherits": "Container",
+   "properties": []
+  },
+  {
+   "name": "Panel",
+   "inherits": "Control",
+   "properties": []
+  },
+  {
+   "name": "TextureRect",
+   "inherits": "Control",
+   "properties": []
+  },
+  {
+   "name": "ColorRect",
+   "inherits": "Control",
+   "properties": []
+  },
+  {
+   "name": "BaseButton",
+   "inherits": "Control",
+   "properties": []
+  },
+  {
+   "name": "Button",
+   "inherits": "BaseButton",
+   "properties": []
+  },
+  {
+   "name": "Label",
+   "inherits": "Control",
+   "properties": [
+    {
+     "name": "text",
+     "type": "String"
+    },
+    {
+     "name": "autowrap_mode",
+     "type": "int"
+    },
+    {
+     "name": "uppercase",
+     "type": "bool"
+    },
+    {
+     "name": "visible_characters",
+     "type": "int"
+    },
+    {
+     "name": "visible_ratio",
+     "type": "float"
+    }
+   ]
+  },
+  {
+   "name": "Node3D",
+   "inherits": "Node",
+   "properties": [
+    {
+     "name": "position",
+     "type": "Vector3"
+    },
+    {
+     "name": "rotation",
+     "type": "Vector3"
+    },
+    {
+     "name": "rotation_degrees",
+     "type": "Vector3"
+    },
+    {
+     "name": "scale",
+     "type": "Vector3"
+    },
+    {
+     "name": "visible",
+     "type": "bool"
+    },
+    {
+     "name": "top_level",
+     "type": "bool"
+    }
+   ]
+  },
+  {
+   "name": "VisualInstance3D",
+   "inherits": "Node3D",
+   "properties": []
+  },
+  {
+   "name": "GeometryInstance3D",
+   "inherits": "VisualInstance3D",
+   "properties": []
+  },
+  {
+   "name": "MeshInstance3D",
+   "inherits": "GeometryInstance3D",
+   "properties": []
+  },
+  {
+   "name": "Camera3D",
+   "inherits": "Node3D",
+   "properties": []
+  },
+  {
+   "name": "Marker3D",
+   "inherits": "Node3D",
+   "properties": []
+  },
+  {
+   "name": "CollisionObject3D",
+   "inherits": "Node3D",
+   "properties": []
+  },
+  {
+   "name": "Area3D",
+   "inherits": "CollisionObject3D",
+   "properties": []
+  },
+  {
+   "name": "PhysicsBody3D",
+   "inherits": "CollisionObject3D",
+   "properties": []
+  },
+  {
+   "name": "CharacterBody3D",
+   "inherits": "PhysicsBody3D",
+   "properties": []
+  },
+  {
+   "name": "RigidBody3D",
+   "inherits": "PhysicsBody3D",
+   "properties": []
+  },
+  {
+   "name": "StaticBody3D",
+   "inherits": "PhysicsBody3D",
+   "properties": []
+  }
+ ]
+}
