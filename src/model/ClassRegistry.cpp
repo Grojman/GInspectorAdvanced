@@ -188,11 +188,11 @@ QString ClassRegistry::addScript(const QString &absPath)
     QList<ClassPtr> classes;
     if (absPath.endsWith(QLatin1String(".cs"), Qt::CaseInsensitive)) {
         CSharpParser::Options o;
-        o.includePrivate = m_includePrivate;
+        o.scope = m_scope;
         classes = CSharpParser::parseFile(absPath, res, o);
     } else {
         GdScriptParser::Options o;
-        o.includePrivate = m_includePrivate;
+        o.scope = m_scope;
         classes = GdScriptParser::parseFile(absPath, res, o);
     }
     m_scriptTimes.insert(absPath, QFileInfo(absPath).lastModified());

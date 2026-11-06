@@ -273,8 +273,12 @@ void addMember(QString header, const QString &defaultExpr, ClassInfo &cls, QStri
         return;
     }
     const bool isPublic = mods.contains(QLatin1String("public"));
-    if (!exported && !isPublic && !ctx.opts.includePrivate)
-        return;
+    if (!exported) {
+        if (ctx.opts.scope == VarScope::Exported)
+            return;
+        if (ctx.opts.scope == VarScope::Public && !isPublic)
+            return;
+    }
 
     // header is now "Type Name" (type may contain generics and spaces after commas)
     int nameEnd = header.size();

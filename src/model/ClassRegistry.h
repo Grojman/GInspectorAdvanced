@@ -39,7 +39,8 @@ public:
     QString projectRoot() const { return m_root; }
     void setFormat(const ValueFormat &fmt) { m_fmt = fmt; m_propCache.clear(); }
     const ValueFormat &format() const { return m_fmt; }
-    void setIncludePrivate(bool v) { m_includePrivate = v; }
+    void setVarScope(VarScope s) { m_scope = s; }
+    VarScope varScope() const { return m_scope; }
 
     // Parses every .gd / .cs script under the project root (skipping .godot/).
     void scanProject();
@@ -83,7 +84,7 @@ private:
 
     QString m_root;
     ValueFormat m_fmt;
-    bool m_includePrivate = false;
+    VarScope m_scope = VarScope::Exported;
     QHash<QString, ClassPtr> m_classes;   // key -> class (scripts and builtins)
     QHash<QString, QString> m_pathToKey;  // res:// path -> main class key
     QHash<QString, QDateTime> m_scriptTimes;

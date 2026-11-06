@@ -10,7 +10,7 @@ class CSharpParser
 public:
     struct Options
     {
-        bool includePrivate = false; // include non-public members without [Export]
+        VarScope scope = VarScope::Exported; // which fields and properties are kept
     };
     static QList<ClassPtr> parse(const QString &source, const QString &resPath, const Options &opts);
     static QList<ClassPtr> parseFile(const QString &absPath, const QString &resPath, const Options &opts);

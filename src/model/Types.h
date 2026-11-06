@@ -47,6 +47,16 @@ struct TypeRef
     QString displayName() const;
 };
 
+// Which script variables become editable fields.
+enum class VarScope {
+    Exported, // only @export / [Export] variables (what Godot itself saves)
+    Public,   // exported variables plus every variable not starting with '_' (C#: public members)
+    All,      // every variable, private ones included
+};
+
+QString varScopeName(VarScope s);
+VarScope varScopeFromName(const QString &name, VarScope fallback = VarScope::Exported);
+
 struct EnumInfo
 {
     QString name;

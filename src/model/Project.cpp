@@ -47,7 +47,7 @@ bool Project::open(const QString &rootIn, QString *error)
     }
     m_registry.setProjectRoot(root);
     m_registry.setFormat(m_config.format);
-    m_registry.setIncludePrivate(m_config.includePrivate);
+    m_registry.setVarScope(m_config.varScope);
     m_registry.scanProject();
     emit opened();
     return true;
@@ -189,7 +189,7 @@ bool Project::saveConfig(QString *error)
 void Project::reloadScripts()
 {
     m_registry.setFormat(m_config.format);
-    m_registry.setIncludePrivate(m_config.includePrivate);
+    m_registry.setVarScope(m_config.varScope);
     m_registry.scanProject();
     // Scripts linked from outside the project are re-added on demand.
     for (JsonDocument *d : std::as_const(m_docs))

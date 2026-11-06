@@ -16,7 +16,7 @@ bool ProjectConfig::load(const QString &projectRoot, QString *error)
     links.clear();
     poly.clear();
     format = ValueFormat();
-    includePrivate = false;
+    varScope = VarScope::Exported;
     backups = true;
 
     QFile f(filePath());
@@ -37,7 +37,10 @@ bool ProjectConfig::load(const QString &projectRoot, QString *error)
     const JValue settings = doc.value(QStringLiteral("settings"));
     format.vector = ValueFormat::vectorFromName(settings.value(QStringLiteral("vector_format")).toString());
     format.color = ValueFormat::colorFromName(settings.value(QStringLiteral("color_format")).toString());
-    includePrivate = settings.value(QStringLiteral("include_private_vars")).toBool(false);
+    // "include_private_vars" is the setting of older versions; "variables" replaces it.
+    const VarScope legacy = settings.value(QStringLiteral("include_private_vars")).toBool(false) ? VarScope::All
+                                                                                              : VarScope::Exported;
+    varScope = varScopeFromName(settings.value(QStringLiteral("variables")).toString(), legacy);
     backups = settings.value(QStringLiteral("backups")).toBool(true);
 
     for (const JMember &m : doc.ref(QStringLiteral("links")).members()) {
@@ -71,7 +74,7 @@ bool ProjectConfig::save(QString *error) const
     settings.setLayout(JValue::LayoutInline);
     settings.set(QStringLiteral("vector_format"), JValue(ValueFormat::vectorName(format.vector)));
     settings.set(QStringLiteral("color_format"), JValue(ValueFormat::colorName(format.color)));
-    settings.set(QStringLiteral("include_private_vars"), JValue(includePrivate));
+    settings.set(QStringLiteral("variables"), JValue(varScopeName(varScope)));
     settings.set(QStringLiteral("backups"), JValue(backups));
     doc.set(QStringLiteral("settings"), settings);
 

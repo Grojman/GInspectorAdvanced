@@ -87,3 +87,24 @@ bool EnumInfo::valueOf(const QString &n, qint64 *out) const
         }
     return false;
 }
+
+QString varScopeName(VarScope s)
+{
+    switch (s) {
+    case VarScope::Public: return QStringLiteral("public");
+    case VarScope::All: return QStringLiteral("all");
+    case VarScope::Exported: break;
+    }
+    return QStringLiteral("exported");
+}
+
+VarScope varScopeFromName(const QString &name, VarScope fallback)
+{
+    if (name == QLatin1String("exported"))
+        return VarScope::Exported;
+    if (name == QLatin1String("public"))
+        return VarScope::Public;
+    if (name == QLatin1String("all"))
+        return VarScope::All;
+    return fallback;
+}

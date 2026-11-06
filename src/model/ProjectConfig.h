@@ -39,6 +39,6 @@ public:
     QMap<QString, LinkInfo> links;   // keyed by res:// json path
     QMap<QString, PolyConfig> poly;  // keyed by base class key
     ValueFormat format;
-    bool includePrivate = false;
+    VarScope varScope = VarScope::Exported;
     bool backups = true;
 };

@@ -74,7 +74,7 @@ private:
     Project *m_project;
     QComboBox *m_vector;
     QComboBox *m_color;
-    QCheckBox *m_private;
+    QComboBox *m_scope;
     QCheckBox *m_backups;
     QLineEdit *m_godot;
     QLabel *m_apiLabel;

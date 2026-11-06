@@ -419,8 +419,12 @@ void parseVar(const LogicalLine &ln, const QString &rest, const QList<Annotation
     }
     if (onready)
         return;
-    if (!opts.includePrivate && p.name.startsWith(QLatin1Char('_')) && !p.exported)
-        return;
+    if (!p.exported) {
+        if (opts.scope == VarScope::Exported)
+            return;
+        if (opts.scope == VarScope::Public && p.name.startsWith(QLatin1Char('_')))
+            return;
+    }
     // Typed enum for @export_enum on String keeps the String type.
     cls.properties << p;
 }

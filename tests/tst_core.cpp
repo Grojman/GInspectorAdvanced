@@ -94,9 +94,9 @@ private slots:
         QCOMPARE(parts->type.elem->className, QStringLiteral("ItemData.SpritePart"));
         QVERIFY(reg.property(QStringLiteral("ItemData.SpritePart"), QStringLiteral("behind")));
 
-        // Private vars are hidden, plain vars are included, builtin inherited ones too.
+        // Only exported vars by default (plus the builtin inherited ones).
         QVERIFY(!reg.property(QStringLiteral("ItemData"), QStringLiteral("_cached_owner")));
-        QVERIFY(reg.property(QStringLiteral("ItemData"), QStringLiteral("id")));
+        QVERIFY(!reg.property(QStringLiteral("ItemData"), QStringLiteral("id")));
         QVERIFY(reg.property(QStringLiteral("ItemData"), QStringLiteral("resource_name")));
 
         const ResolvedProperty *offset = reg.property(QStringLiteral("ItemData"), QStringLiteral("pickup_offset"));
@@ -119,6 +119,7 @@ private slots:
             "var arr: Array[int] = [1, X]\n"
             "func f():\n\tvar local = 1\n");
         GdScriptParser::Options o;
+        o.scope = VarScope::Public;
         const QList<ClassPtr> classes = GdScriptParser::parse(src, QStringLiteral("res://x.gd"), o);
         QCOMPARE(classes.size(), 1);
         const ClassInfo &c = *classes.first();
@@ -130,6 +131,46 @@ private slots:
         QCOMPARE(c.properties[0].hint.step, 0.5);
         QCOMPARE(c.properties[0].defaultExpr, QStringLiteral("2.5"));
         QCOMPARE(c.properties[1].defaultExpr, QStringLiteral("{\"k\": 1, \"j\": [1, 2]}"));
+    }
+
+    void variableScopes()
+    {
+        const QString gd = QStringLiteral("@export var a := 1\nvar b := 2\nvar _c := 3\n@export var _d := 4\n");
+        auto gdNames = [&](VarScope s) {
+            GdScriptParser::Options o;
+            o.scope = s;
+            const QList<ClassPtr> classes = GdScriptParser::parse(gd, QStringLiteral("res://s.gd"), o);
+            QStringList names;
+            for (const PropertyInfo &p : classes.first()->properties)
+                names << p.name;
+            return names;
+        };
+        QCOMPARE(gdNames(VarScope::Exported), QStringList({QStringLiteral("a"), QStringLiteral("_d")}));
+        QCOMPARE(gdNames(VarScope::Public), QStringList({QStringLiteral("a"), QStringLiteral("b"), QStringLiteral("_d")}));
+        QCOMPARE(gdNames(VarScope::All), QStringList({QStringLiteral("a"), QStringLiteral("b"), QStringLiteral("_c"),
+                                                      QStringLiteral("_d")}));
+
+        const QString cs = QStringLiteral("public partial class S : Resource {\n"
+                                          "  [Export] public int A { get; set; }\n"
+                                          "  public int B;\n"
+                                          "  private int _c;\n"
+                                          "}\n");
+        auto csNames = [&](VarScope s) {
+            CSharpParser::Options o;
+            o.scope = s;
+            QStringList names;
+            const QList<ClassPtr> classes = CSharpParser::parse(cs, QStringLiteral("res://S.cs"), o);
+            if (!classes.isEmpty())
+                for (const PropertyInfo &p : classes.first()->properties)
+                    names << p.name;
+            return names;
+        };
+        QCOMPARE(csNames(VarScope::Exported), QStringList({QStringLiteral("A")}));
+        QCOMPARE(csNames(VarScope::Public), QStringList({QStringLiteral("A"), QStringLiteral("B")}));
+        QCOMPARE(csNames(VarScope::All), QStringList({QStringLiteral("A"), QStringLiteral("B"), QStringLiteral("_c")}));
+
+        QVERIFY(varScopeFromName(varScopeName(VarScope::Public)) == VarScope::Public);
+        QVERIFY(varScopeFromName(QStringLiteral("bogus"), VarScope::All) == VarScope::All);
     }
 
     void csharpParsing()

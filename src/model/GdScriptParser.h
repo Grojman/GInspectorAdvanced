@@ -11,7 +11,7 @@ class GdScriptParser
 public:
     struct Options
     {
-        bool includePrivate = false; // include vars whose name starts with '_'
+        VarScope scope = VarScope::Exported; // which variables are kept
     };
 
     // Returns the main class first, followed by every inner class (keys "Outer.Inner").

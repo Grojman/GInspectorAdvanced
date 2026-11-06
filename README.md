@@ -29,6 +29,8 @@ Runs on **Windows and Linux** (Qt 6 / C++17).
 - **Cards** for each item: thumbnail (from any `res://` image path in the item), title, a summary of its
   values, a red badge with the number of problems, and a dot for unsaved changes. You can search and filter.
 - **Inspector** built from the class:
+  - only the **exported** variables (`@export`, `[Export]`) by default, like Godot saves them. *Settings →
+    Editable variables* can also include public or private variables;
   - one section per class in the inheritance chain (your scripts first, built-in classes collapsed), like
     Godot;
   - `@export_group` / `@export_subgroup` / `@export_category` sections;
@@ -219,7 +221,7 @@ team shares the links.
 {
 	"_comment": "Created by GInspectorAdvanced. Links JSON data files to the Godot classes that describe them.",
 	"version": 1,
-	"settings": {"vector_format": "array", "color_format": "hex", "include_private_vars": false, "backups": true},
+	"settings": {"vector_format": "array", "color_format": "hex", "variables": "exported", "backups": true},
 	"links": {
 		"res://data/items.json": {
 			"class": "ItemData",
@@ -243,7 +245,7 @@ team shares the links.
 | `polymorphism` | only for hierarchies you customised; the others use the automatic rules |
 | `settings.vector_format` | how *new* vectors are written: `array` (`[1, 2]`), `object` (`{"x": 1, "y": 2}`) or `string` (`"(1, 2)"`) |
 | `settings.color_format` | how *new* colors are written: `hex`, `array` or `object` |
-| `settings.include_private_vars` | also edit variables starting with `_` |
+| `settings.variables` | which variables are editable: `exported` (only `@export` / `[Export]`, the default), `public` (also variables not starting with `_`; C#: `public` members) or `all` |
 | `settings.backups` | write `file.json.bak` before saving |
 
 Existing values always keep the format they already have.

@@ -33,9 +33,9 @@ var _cached_owner: Node  # private: hidden from the inspector
 
 ## A sprite drawn on top of the item icon.
 class SpritePart:
-	var texture_path: String
-	var offset: Vector2
-	var behind := false
+	@export var texture_path: String
+	@export var offset: Vector2
+	@export var behind := false
 
 func describe() -> String:
 	return "%s (%s)" % [display_name, Rarity.keys()[rarity]]

@@ -298,6 +298,11 @@ void ClassPickerDialog::updateDetails()
     int idx = m_keyField->findData(keepKey);
     if (idx < 0 && keepKey.isEmpty())
         idx = m_keyField->findData(QStringLiteral("id"));
+    if (idx < 0 && !keepKey.isEmpty()) {
+        // The key field is usually filled by code, so it need not be an editable (exported) variable.
+        m_keyField->addItem(keepKey, keepKey);
+        idx = m_keyField->count() - 1;
+    }
     m_keyField->setCurrentIndex(qMax(0, idx));
 }
 
@@ -350,11 +355,16 @@ SettingsDialog::SettingsDialog(Project *project, QWidget *parent) : QDialog(pare
     m_color->addItem(QStringLiteral("\"#rrggbbaa\""), QStringLiteral("hex"));
     m_color->addItem(QStringLiteral("[r, g, b, a]"), QStringLiteral("array"));
     m_color->addItem(QStringLiteral("{\"r\", \"g\", \"b\", \"a\"}"), QStringLiteral("object"));
-    m_private = new QCheckBox(tr("Include variables starting with _"), proj);
+    m_scope = new QComboBox(proj);
+    m_scope->addItem(tr("Exported only (@export / [Export])"), varScopeName(VarScope::Exported));
+    m_scope->addItem(tr("Exported and public (not starting with _)"), varScopeName(VarScope::Public));
+    m_scope->addItem(tr("All variables, private ones included"), varScopeName(VarScope::All));
+    m_scope->setToolTip(tr("Which variables of a class can be edited and stored in the JSON.\n"
+                           "Godot itself only saves exported variables."));
     m_backups = new QCheckBox(tr("Write a .bak copy before saving a JSON file"), proj);
     pf->addRow(tr("New vectors are written as"), m_vector);
     pf->addRow(tr("New colors are written as"), m_color);
-    pf->addRow(QString(), m_private);
+    pf->addRow(tr("Editable variables"), m_scope);
     pf->addRow(QString(), m_backups);
     auto *note = new QLabel(tr("Existing values keep the format they already have. "
                                "These settings are stored in ginspector.json."), proj);
@@ -367,7 +377,7 @@ SettingsDialog::SettingsDialog(Project *project, QWidget *parent) : QDialog(pare
         const ProjectConfig &c = project->config();
         m_vector->setCurrentIndex(m_vector->findData(ValueFormat::vectorName(c.format.vector)));
         m_color->setCurrentIndex(m_color->findData(ValueFormat::colorName(c.format.color)));
-        m_private->setChecked(c.includePrivate);
+        m_scope->setCurrentIndex(qMax(0, m_scope->findData(varScopeName(c.varScope))));
         m_backups->setChecked(c.backups);
     }
 
@@ -462,11 +472,12 @@ void SettingsDialog::apply()
     ProjectConfig &c = m_project->config();
     const auto vec = ValueFormat::vectorFromName(m_vector->currentData().toString());
     const auto col = ValueFormat::colorFromName(m_color->currentData().toString());
-    m_projectChanged = vec != c.format.vector || col != c.format.color || m_private->isChecked() != c.includePrivate
+    const VarScope scope = varScopeFromName(m_scope->currentData().toString());
+    m_projectChanged = vec != c.format.vector || col != c.format.color || scope != c.varScope
                        || m_backups->isChecked() != c.backups;
     c.format.vector = vec;
     c.format.color = col;
-    c.includePrivate = m_private->isChecked();
+    c.varScope = scope;
     c.backups = m_backups->isChecked();
     if (m_projectChanged) {
         QString err;
