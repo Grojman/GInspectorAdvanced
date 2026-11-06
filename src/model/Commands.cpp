@@ -5,6 +5,20 @@ SetValueCommand::SetValueCommand(JsonDocument *doc, int item, const JPath &path,
     : QUndoCommand(text), m_doc(doc), m_item(item), m_path(path), m_old(doc->valueAt(item, path)), m_new(value),
       m_mergeable(mergeable)
 {
+    // When intermediate objects do not exist yet, store the change at the first
+    // missing ancestor so undo removes everything this command created.
+    for (int n = 1; n < path.size(); ++n) {
+        const JPath prefix = path.mid(0, n);
+        if (!doc->valueAt(item, prefix).isUndefined())
+            continue;
+        JValue built;
+        if (setAt(built, path.mid(n), value)) {
+            m_path = prefix;
+            m_old = JValue();
+            m_new = built;
+        }
+        break;
+    }
     m_timer.start();
 }
 
