@@ -2,6 +2,7 @@
 #include "model/Project.h"
 #include "ui/AppSettings.h"
 #include "ui/MainWindow.h"
+#include "ui/Theme.h"
 
 #include <QApplication>
 #include <QCommandLineParser>
@@ -17,6 +18,7 @@ int main(int argc, char **argv)
     QApplication::setApplicationVersion(QStringLiteral(GIA_VERSION));
     QApplication::setDesktopFileName(QStringLiteral("ginspectoradvanced"));
     giaInitResources();
+    Theme::apply(app);
     QApplication::setWindowIcon(QIcon(QStringLiteral(":/icons/app.svg")));
 
     QCommandLineParser parser;

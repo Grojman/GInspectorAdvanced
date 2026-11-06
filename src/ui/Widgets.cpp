@@ -1,4 +1,5 @@
 #include "Widgets.h"
+#include "Theme.h"
 
 #include <QAbstractSpinBox>
 #include <QApplication>
@@ -28,18 +29,25 @@ CollapsibleSection::CollapsibleSection(const QString &title, Style style, QWidge
     m_header->setAttribute(Qt::WA_StyledBackground, true);
     m_header->setCursor(Qt::PointingHandCursor);
     auto *hl = new QHBoxLayout(m_header);
-    hl->setContentsMargins(style == Category ? 6 : 2, style == Category ? 4 : 1, 4, style == Category ? 4 : 1);
-    hl->setSpacing(4);
+    if (style == Category)
+        hl->setContentsMargins(10, 8, 8, 8);
+    else if (style == Group)
+        hl->setContentsMargins(4, 8, 6, 6);
+    else
+        hl->setContentsMargins(2, 3, 4, 3);
+    hl->setSpacing(Theme::FieldSpacing);
     m_arrow = new QToolButton(m_header);
     m_arrow->setAutoRaise(true);
     m_arrow->setArrowType(Qt::DownArrow);
-    m_arrow->setFixedSize(16, 16);
+    m_arrow->setFixedSize(22, 22);
     m_arrow->setFocusPolicy(Qt::NoFocus);
     hl->addWidget(m_arrow);
     m_title = new QLabel(title, m_header);
-    if (style == Category) {
+    if (style != Value) {
         QFont f = m_title->font();
         f.setBold(true);
+        if (style == Category)
+            f.setPointSizeF(f.pointSizeF() * 1.12);
         m_title->setFont(f);
     }
     m_title->setMinimumWidth(style == Value ? 120 : 0);
@@ -49,14 +57,15 @@ CollapsibleSection::CollapsibleSection(const QString &title, Style style, QWidge
     hl->addWidget(m_subtitle);
     hl->addStretch(1);
     m_headerExtra = new QHBoxLayout();
-    m_headerExtra->setSpacing(2);
+    m_headerExtra->setSpacing(4);
     hl->addLayout(m_headerExtra);
     outer->addWidget(m_header);
 
     m_body = new QWidget(this);
     m_bodyLayout = new QVBoxLayout(m_body);
-    m_bodyLayout->setContentsMargins(style == Category ? 4 : 14, 2, 0, 4);
-    m_bodyLayout->setSpacing(2);
+    m_bodyLayout->setContentsMargins(style == Category ? 10 : 22, Theme::RowSpacing, style == Category ? 6 : 0,
+                                     style == Category ? Theme::SectionSpacing : Theme::RowSpacing);
+    m_bodyLayout->setSpacing(Theme::RowSpacing);
     outer->addWidget(m_body);
 
     connect(m_arrow, &QToolButton::clicked, this, [this] { setExpanded(!m_expanded); emit toggled(m_expanded); });
@@ -158,7 +167,7 @@ NumberEdit::NumberEdit(bool integer, double min, double max, double step, bool s
 {
     auto *l = new QHBoxLayout(this);
     l->setContentsMargins(0, 0, 0, 0);
-    l->setSpacing(4);
+    l->setSpacing(Theme::FieldSpacing);
     if (integer) {
         auto *sb = new QSpinBox(this);
         sb->setRange(int(qMax(min, double(std::numeric_limits<int>::min()))),
@@ -260,7 +269,10 @@ QToolButton *makeToolButton(const QString &text, const QString &tooltip, QWidget
     b->setToolTip(tooltip);
     b->setAutoRaise(true);
     b->setFocusPolicy(Qt::NoFocus);
-    b->setFixedSize(22, 22);
+    b->setFixedSize(30, 30);
+    QFont f = b->font();
+    f.setPointSizeF(f.pointSizeF() * 1.1);
+    b->setFont(f);
     return b;
 }
 

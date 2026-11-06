@@ -109,7 +109,7 @@ QPixmap CardModel::thumbnail(int row) const
     if (QFileInfo::exists(abs)) {
         QPixmap src(abs);
         if (!src.isNull())
-            pm = src.scaled(44, 44, Qt::KeepAspectRatio, src.width() <= 44 ? Qt::FastTransformation : Qt::SmoothTransformation);
+            pm = src.scaled(56, 56, Qt::KeepAspectRatio, src.width() <= 56 ? Qt::FastTransformation : Qt::SmoothTransformation);
     }
     m_thumbs.insert(path, pm);
     return pm;
@@ -209,7 +209,7 @@ bool CardFilter::filterAcceptsRow(int row, const QModelIndex &parent) const
 QSize CardDelegate::sizeHint(const QStyleOptionViewItem &opt, const QModelIndex &) const
 {
     const int lh = opt.fontMetrics.height();
-    return QSize(220, qMax(64, lh * 4 + 14));
+    return QSize(240, qMax(96, lh * 4 + 36));
 }
 
 void CardDelegate::paint(QPainter *p, const QStyleOptionViewItem &opt, const QModelIndex &index) const
@@ -219,14 +219,20 @@ void CardDelegate::paint(QPainter *p, const QStyleOptionViewItem &opt, const QMo
     const QPalette &pal = opt.palette;
     const bool selected = opt.state & QStyle::State_Selected;
     const bool hover = opt.state & QStyle::State_MouseOver;
-    const QRectF card = QRectF(opt.rect).adjusted(4, 3, -4, -3);
+    const QRectF card = QRectF(opt.rect).adjusted(8, 6, -8, -6);
 
     QColor bg = pal.color(QPalette::Base);
     if (hover)
         bg = bg.lightness() > 128 ? bg.darker(104) : bg.lighter(115);
+    if (selected) {
+        QColor hl = pal.color(QPalette::Highlight);
+        hl.setAlphaF(0.12f);
+        bg = QColor::fromRgbF(bg.redF() * 0.88f + hl.redF() * 0.12f, bg.greenF() * 0.88f + hl.greenF() * 0.12f,
+                              bg.blueF() * 0.88f + hl.blueF() * 0.12f);
+    }
     QColor border = selected ? pal.color(QPalette::Highlight) : pal.color(QPalette::Mid);
     QPainterPath path;
-    path.addRoundedRect(card, 7, 7);
+    path.addRoundedRect(card, 10, 10);
     p->fillPath(path, bg);
     p->setPen(QPen(border, selected ? 2.0 : 1.0));
     p->drawPath(path);
@@ -236,12 +242,12 @@ void CardDelegate::paint(QPainter *p, const QStyleOptionViewItem &opt, const QMo
     if (errors || warnings) {
         // Left accent stripe
         QPainterPath stripe;
-        stripe.addRoundedRect(QRectF(card.left(), card.top(), 5, card.height()), 2, 2);
+        stripe.addRoundedRect(QRectF(card.left(), card.top() + 8, 5, card.height() - 16), 2.5, 2.5);
         p->fillPath(stripe, errors ? QColor(0xe5, 0x53, 0x4b) : QColor(0xd2, 0x99, 0x22));
     }
 
     // Thumbnail or initial
-    const QRect thumbRect(int(card.left()) + 10, int(card.top()) + (int(card.height()) - 44) / 2, 44, 44);
+    const QRect thumbRect(int(card.left()) + 16, int(card.top()) + (int(card.height()) - 56) / 2, 56, 56);
     const QPixmap pm = index.data(CardModel::ThumbRole).value<QPixmap>();
     const QString title = index.data(CardModel::TitleRole).toString();
     if (!pm.isNull()) {
@@ -261,14 +267,15 @@ void CardDelegate::paint(QPainter *p, const QStyleOptionViewItem &opt, const QMo
     }
 
     // Text
-    const int textLeft = thumbRect.right() + 10;
-    const int right = int(card.right()) - 8;
+    const int textLeft = thumbRect.right() + 16;
+    const int right = int(card.right()) - 14;
     QFont tf = opt.font;
     tf.setBold(true);
+    tf.setPointSizeF(tf.pointSizeF() * 1.12);
     p->setFont(tf);
     p->setPen(pal.color(QPalette::Text));
     const QFontMetrics tfm(tf);
-    int y = int(card.top()) + 6;
+    int y = int(card.top()) + 12;
     QString badge;
     if (errors)
         badge = QString::number(errors);
@@ -290,10 +297,10 @@ void CardDelegate::paint(QPainter *p, const QStyleOptionViewItem &opt, const QMo
         p->setPen(Qt::white);
         p->drawText(br, Qt::AlignCenter, badge);
     }
-    y += tfm.height() + 1;
+    y += tfm.height() + 4;
 
     QFont sf = opt.font;
-    sf.setPointSizeF(sf.pointSizeF() * 0.9);
+    sf.setPointSizeF(sf.pointSizeF() * 0.95);
     const QFontMetrics sfm(sf);
     p->setFont(sf);
     QColor dim = pal.color(QPalette::Text);
@@ -301,7 +308,7 @@ void CardDelegate::paint(QPainter *p, const QStyleOptionViewItem &opt, const QMo
     p->setPen(dim);
     p->drawText(QRect(textLeft, y, right - textLeft, sfm.height()), Qt::AlignLeft | Qt::AlignVCenter,
                 sfm.elidedText(index.data(CardModel::SubtitleRole).toString(), Qt::ElideRight, right - textLeft));
-    y += sfm.height();
+    y += sfm.height() + 3;
     const QStringList summary = index.data(CardModel::SummaryRole).toStringList();
     dim.setAlphaF(0.85f);
     p->setPen(dim);

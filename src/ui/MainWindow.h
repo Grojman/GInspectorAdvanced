@@ -2,6 +2,7 @@
 
 #include <QMainWindow>
 #include <QPointer>
+#include <QSet>
 
 class CardFilter;
 class CardModel;
@@ -14,6 +15,7 @@ class QLabel;
 class QLineEdit;
 class QListView;
 class QListWidget;
+class QPushButton;
 class QMenu;
 class QStackedWidget;
 class QTimer;
@@ -70,6 +72,9 @@ private:
     void checkExternalChanges();
     void rebuildAddMenu();
     void showAbout();
+    void changeClass();
+    // Asks whether the class is wrong when no item of the file matches it.
+    void checkWrongClass(JsonDocument *doc);
 
     Project *m_project;
     QPointer<JsonDocument> m_doc;
@@ -83,6 +88,8 @@ private:
     QListView *m_list = nullptr;
     QLineEdit *m_search = nullptr;
     QLabel *m_docHeader = nullptr;
+    QPushButton *m_changeClassButton = nullptr;
+    QSet<QString> m_wrongClassDismissed;
     QTreeWidget *m_files = nullptr;
     QTreeWidget *m_problems = nullptr;
     QLabel *m_problemSummary = nullptr;

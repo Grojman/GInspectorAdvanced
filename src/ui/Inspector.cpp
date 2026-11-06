@@ -1,5 +1,6 @@
 #include "Inspector.h"
 #include "Widgets.h"
+#include "Theme.h"
 #include "core/JsonIO.h"
 #include "model/Commands.h"
 #include "model/Project.h"
@@ -86,7 +87,7 @@ QString hintText(const PropertyHint &h)
 
 int labelWidth(int depth)
 {
-    return qMax(90, 160 - depth * 14);
+    return qMax(120, Theme::LabelWidth - depth * 18);
 }
 
 QLabel *makeLabel(const QString &text, int depth, QWidget *parent)
@@ -134,9 +135,10 @@ Inspector::Inspector(Project *project, QWidget *parent)
         "QLabel[state=\"child-error\"] { color: #e5534b; }"
         "QLabel[state=\"absent\"] { color: palette(placeholder-text); }"
         "QLabel#dimLabel { color: palette(placeholder-text); }"
-        "QWidget#categoryHeader { background: palette(midlight); border-radius: 3px; }"
-        "QWidget#groupHeader { border-bottom: 1px solid palette(mid); }"
-        "QFrame#unknownBox { border: 1px solid #e5534b; border-radius: 4px; }"
+        "QWidget#categoryHeader { background: palette(midlight); border-radius: 7px; }"
+        "QWidget#groupHeader { border-bottom: 2px solid palette(mid); }"
+        "QWidget#itemHeader { background: palette(alternate-base); border: 1px solid palette(mid); border-radius: 10px; }"
+        "QFrame#unknownBox { border: 2px solid #e5534b; border-radius: 8px; }"
         "QLineEdit[invalid=\"true\"] { border: 1px solid #e5534b; }"));
     rebuild();
 }
@@ -232,8 +234,8 @@ void Inspector::rebuild()
     auto *content = new QWidget();
     m_content = content; // parent for widgets created while building
     auto *layout = new QVBoxLayout(content);
-    layout->setContentsMargins(8, 8, 8, 8);
-    layout->setSpacing(3);
+    layout->setContentsMargins(Theme::PageMargin, Theme::PageMargin, Theme::PageMargin, Theme::PageMargin);
+    layout->setSpacing(Theme::SectionSpacing);
 
     if (!m_doc || m_item < 0 || m_item >= m_doc->count()) {
         auto *l = new QLabel(m_doc ? tr("Select an item to edit its values.") : tr("No JSON file opened."), content);
@@ -279,16 +281,19 @@ void Inspector::buildHeader(QVBoxLayout *into)
 
     auto *box = new QWidget(parent);
     auto *grid = new QGridLayout(box);
-    grid->setContentsMargins(0, 0, 0, 6);
-    grid->setHorizontalSpacing(8);
+    grid->setContentsMargins(16, 14, 16, 14);
+    grid->setHorizontalSpacing(14);
+    grid->setVerticalSpacing(Theme::RowSpacing);
+    box->setObjectName(QStringLiteral("itemHeader"));
+    box->setAttribute(Qt::WA_StyledBackground, true);
     int r = 0;
 
     auto *title = new QLabel(m_doc->itemTitle(m_item), box);
     QFont tf = title->font();
-    tf.setPointSizeF(tf.pointSizeF() * 1.35);
+    tf.setPointSizeF(tf.pointSizeF() * 1.6);
     tf.setBold(true);
     title->setFont(tf);
-    grid->addWidget(title, r++, 0, 1, 2);
+    grid->addWidget(title, r++, 0, 1, 3);
 
     if (m_doc->shape() == JsonDocument::Shape::Dictionary) {
         grid->addWidget(makeLabel(m_doc->link().keyField.isEmpty() ? tr("Key")
@@ -318,7 +323,7 @@ void Inspector::buildHeader(QVBoxLayout *into)
             m_committing = false;
             scheduleRebuild();
         });
-        grid->addWidget(key, r++, 1);
+        grid->addWidget(key, r++, 1, 1, 2);
     }
 
     grid->addWidget(makeLabel(tr("Class"), 0, box), r, 0);
@@ -342,22 +347,26 @@ void Inspector::buildHeader(QVBoxLayout *into)
                     nv.set(m.key, m.value);
             commitStructural({}, nv, tr("Change class"));
         });
-        grid->addWidget(combo, r++, 1);
+        grid->addWidget(combo, r, 1);
     } else {
         auto *cl = new QLabel(chainNames.join(QStringLiteral(" ‹ ")), box);
         cl->setWordWrap(true);
-        grid->addWidget(cl, r++, 1);
+        grid->addWidget(cl, r, 1);
     }
+    auto *change = new QPushButton(tr("Change Class…"), box);
+    change->setToolTip(tr("Link %1 to a different class").arg(m_doc->fileName()));
+    connect(change, &QPushButton::clicked, this, &Inspector::changeClassRequested);
+    grid->addWidget(change, r++, 2);
     if (const ClassInfo *c = m_reg->get(actual); c && !c->scriptPath.isEmpty()) {
         auto *sp = new QLabel(c->scriptPath, box);
         sp->setObjectName(QStringLiteral("dimLabel"));
         sp->setTextInteractionFlags(Qt::TextSelectableByMouse);
-        grid->addWidget(sp, r++, 1);
+        grid->addWidget(sp, r++, 1, 1, 2);
         if (!c->doc.isEmpty()) {
             auto *d = new QLabel(c->doc, box);
             d->setWordWrap(true);
             d->setObjectName(QStringLiteral("dimLabel"));
-            grid->addWidget(d, r++, 1);
+            grid->addWidget(d, r++, 1, 1, 2);
         }
     }
     grid->setColumnStretch(1, 1);
@@ -468,7 +477,8 @@ void Inspector::buildUnknownKeys(QVBoxLayout *into, const JPath &base, const JVa
     auto *box = new QFrame(into->parentWidget());
     box->setObjectName(QStringLiteral("unknownBox"));
     auto *l = new QVBoxLayout(box);
-    l->setContentsMargins(6, 4, 6, 4);
+    l->setContentsMargins(12, 10, 12, 10);
+    l->setSpacing(Theme::RowSpacing);
     auto *head = new QHBoxLayout();
     auto *title = new QLabel(tr("Fields not declared in %1").arg(m_schema->displayName(classKey)), box);
     title->setProperty("state", "error");
@@ -563,7 +573,7 @@ QWidget *Inspector::buildValue(const JPath &path, const QString &label, const Ty
     auto *line = new QWidget(parent);
     auto *hl = new QHBoxLayout(line);
     hl->setContentsMargins(0, 0, 0, 0);
-    hl->setSpacing(4);
+    hl->setSpacing(Theme::FieldSpacing);
     if (!label.isEmpty()) {
         auto *lab = makeLabel(label, depth, line);
         hl->addWidget(lab);
@@ -678,7 +688,8 @@ QWidget *Inspector::intEditor(const JPath &path, const TypeRef &t, const Propert
         auto *w = new QWidget(parent);
         auto *grid = new QGridLayout(w);
         grid->setContentsMargins(0, 0, 0, 0);
-        grid->setSpacing(2);
+        grid->setHorizontalSpacing(16);
+        grid->setVerticalSpacing(6);
         const int cols = h.options.size() > 8 ? 4 : 2;
         const qint64 cur = eff.toInt();
         auto boxes = std::make_shared<QList<QPair<QCheckBox *, qint64>>>();
@@ -783,7 +794,7 @@ QWidget *Inspector::vectorEditor(const JPath &path, const TypeRef &t, const JVal
     auto *w = new QWidget(m_content);
     auto *hl = new QHBoxLayout(w);
     hl->setContentsMargins(0, 0, 0, 0);
-    hl->setSpacing(3);
+    hl->setSpacing(Theme::FieldSpacing);
     QVector<double> vals;
     if (!Values::readVector(eff, t, &vals))
         vals = QVector<double>(t.components(), 0.0);
@@ -835,12 +846,12 @@ QWidget *Inspector::colorEditor(const JPath &path, const PropertyHint &h, const 
     auto *w = new QWidget(m_content);
     auto *hl = new QHBoxLayout(w);
     hl->setContentsMargins(0, 0, 0, 0);
-    hl->setSpacing(4);
+    hl->setSpacing(Theme::FieldSpacing);
     QColor c(0, 0, 0);
     Values::readColor(eff, &c);
     const bool alpha = h.kind != PropertyHint::ColorNoAlpha;
     auto *swatch = new QPushButton(w);
-    swatch->setFixedSize(48, 22);
+    swatch->setFixedSize(64, 32);
     auto paint = [swatch](const QColor &col) {
         swatch->setStyleSheet(QStringLiteral("QPushButton { background: %1; border: 1px solid palette(mid); border-radius: 3px; }")
                                   .arg(col.name(QColor::HexArgb)));
@@ -917,9 +928,9 @@ QWidget *Inspector::pathEditor(const JPath &path, const JValue &eff, const QStri
     auto *w = new QWidget(m_content);
     auto *hl = new QHBoxLayout(w);
     hl->setContentsMargins(0, 0, 0, 0);
-    hl->setSpacing(3);
+    hl->setSpacing(Theme::FieldSpacing);
     auto *thumb = new QLabel(w);
-    thumb->setFixedSize(24, 24);
+    thumb->setFixedSize(32, 32);
     thumb->setScaledContents(false);
     hl->addWidget(thumb);
     auto *le = new QLineEdit(eff.toString(), w);
@@ -931,7 +942,7 @@ QWidget *Inspector::pathEditor(const JPath &path, const JValue &eff, const QStri
         const QString abs = m_reg->toAbs(res);
         if (imageExts().contains(QFileInfo(res).suffix().toLower()) && QFileInfo::exists(abs)) {
             QPixmap pm(abs);
-            thumb->setPixmap(pm.scaled(24, 24, Qt::KeepAspectRatio, Qt::FastTransformation));
+            thumb->setPixmap(pm.scaled(32, 32, Qt::KeepAspectRatio, Qt::FastTransformation));
             thumb->setToolTip(res);
         } else {
             thumb->clear();
@@ -1019,7 +1030,7 @@ QWidget *Inspector::variantEditor(const JPath &path, const JValue &eff)
     auto *w = new QWidget(m_content);
     auto *hl = new QHBoxLayout(w);
     hl->setContentsMargins(0, 0, 0, 0);
-    hl->setSpacing(3);
+    hl->setSpacing(Theme::FieldSpacing);
     auto *type = new QComboBox(w);
     WheelGuard::install(type);
     const QStringList types = {QStringLiteral("null"), QStringLiteral("bool"), QStringLiteral("int"),
@@ -1203,10 +1214,10 @@ CollapsibleSection *Inspector::arraySection(const JPath &path, const QString &la
             auto *line = new QWidget(sec);
             auto *hl = new QHBoxLayout(line);
             hl->setContentsMargins(0, 0, 0, 0);
-            hl->setSpacing(4);
+            hl->setSpacing(Theme::FieldSpacing);
             auto *idx = new QLabel(QString::number(i), line);
             idx->setObjectName(QStringLiteral("dimLabel"));
-            idx->setFixedWidth(28);
+            idx->setFixedWidth(34);
             hl->addWidget(idx);
             QWidget *ed = simpleEditor(ep, elem, h, arr.at(i), arr.at(i));
             ed->setParent(line);
@@ -1321,7 +1332,7 @@ CollapsibleSection *Inspector::dictSection(const JPath &path, const QString &lab
             auto *line = new QWidget(sec);
             auto *hl = new QHBoxLayout(line);
             hl->setContentsMargins(0, 0, 0, 0);
-            hl->setSpacing(4);
+            hl->setSpacing(Theme::FieldSpacing);
             keyEdit->setParent(line);
             hl->addWidget(keyEdit);
             QWidget *ed = simpleEditor(vp, valType, PropertyHint(), m.value, m.value);

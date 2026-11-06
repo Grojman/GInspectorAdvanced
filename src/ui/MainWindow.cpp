@@ -3,6 +3,7 @@
 #include "CardList.h"
 #include "Dialogs.h"
 #include "Inspector.h"
+#include "Theme.h"
 #include "model/Commands.h"
 #include "model/Project.h"
 #include "model/Validator.h"
@@ -114,7 +115,9 @@ void MainWindow::buildActions()
     m_actUp = makeAction(this, tr("Move Item &Up"), QKeySequence(tr("Alt+Up")), stdIcon(QStyle::SP_ArrowUp, QStringLiteral("go-up")));
     m_actDown = makeAction(this, tr("Move Item Do&wn"), QKeySequence(tr("Alt+Down")), stdIcon(QStyle::SP_ArrowDown, QStringLiteral("go-down")));
     m_actFind = makeAction(this, tr("&Find Item"), QKeySequence::Find);
-    m_actLink = makeAction(this, tr("&Link JSON to Class…"), QKeySequence(tr("Ctrl+L")));
+    m_actLink = makeAction(this, tr("Change &Class…"), QKeySequence(tr("Ctrl+L")),
+                           stdIcon(QStyle::SP_FileDialogDetailedView, QStringLiteral("document-properties")));
+    m_actLink->setToolTip(tr("Link the current JSON file to a different class"));
     m_actPoly = makeAction(this, tr("&Polymorphic Types…"), QKeySequence());
     m_actReload = makeAction(this, tr("&Reload Scripts"), QKeySequence(tr("F5")), stdIcon(QStyle::SP_BrowserReload, QStringLiteral("view-refresh")));
     m_actFixAll = makeAction(this, tr("&Fix All Problems…"), QKeySequence(), stdIcon(QStyle::SP_DialogApplyButton));
@@ -133,10 +136,7 @@ void MainWindow::buildActions()
     connect(m_actUp, &QAction::triggered, this, [this] { moveItem(-1); });
     connect(m_actDown, &QAction::triggered, this, [this] { moveItem(1); });
     connect(m_actFind, &QAction::triggered, this, [this] { m_search->setFocus(); m_search->selectAll(); });
-    connect(m_actLink, &QAction::triggered, this, [this] {
-        if (m_doc && linkDocument(m_doc))
-            showDocument(m_doc);
-    });
+    connect(m_actLink, &QAction::triggered, this, &MainWindow::changeClass);
     connect(m_actPoly, &QAction::triggered, this, [this] {
         PolymorphismDialog d(m_project, this);
         d.exec();
@@ -210,6 +210,7 @@ void MainWindow::buildMenus()
     tb->addAction(m_actUndo);
     tb->addAction(m_actRedo);
     tb->addSeparator();
+    tb->addAction(m_actLink);
     tb->addAction(m_actReload);
 }
 
@@ -279,11 +280,19 @@ void MainWindow::buildUi()
     editor->setObjectName(QStringLiteral("editorSplitter"));
     auto *left = new QWidget(editor);
     auto *ll = new QVBoxLayout(left);
-    ll->setContentsMargins(6, 6, 0, 6);
+    ll->setContentsMargins(12, 12, 6, 12);
+    ll->setSpacing(Theme::RowSpacing + 2);
+    auto *headerRow = new QHBoxLayout();
+    headerRow->setSpacing(Theme::FieldSpacing);
     m_docHeader = new QLabel(left);
     m_docHeader->setWordWrap(true);
     m_docHeader->setTextFormat(Qt::RichText);
-    ll->addWidget(m_docHeader);
+    headerRow->addWidget(m_docHeader, 1);
+    m_changeClassButton = new QPushButton(tr("Change Class…"), left);
+    m_changeClassButton->setToolTip(m_actLink->toolTip());
+    connect(m_changeClassButton, &QPushButton::clicked, this, &MainWindow::changeClass);
+    headerRow->addWidget(m_changeClassButton, 0, Qt::AlignTop);
+    ll->addLayout(headerRow);
     m_search = new QLineEdit(left);
     m_search->setPlaceholderText(tr("Search items…"));
     m_search->setClearButtonEnabled(true);
@@ -315,6 +324,7 @@ void MainWindow::buildUi()
         b->setDefaultAction(a);
         buttons->addWidget(b);
     }
+    buttons->setSpacing(Theme::FieldSpacing);
     buttons->addStretch(1);
     ll->addLayout(buttons);
 
@@ -339,6 +349,7 @@ void MainWindow::buildUi()
         updateActions();
     });
     connect(m_inspector, &Inspector::statusMessage, this, [this](const QString &m) { statusBar()->showMessage(m, 6000); });
+    connect(m_inspector, &Inspector::changeClassRequested, this, &MainWindow::changeClass);
 
     // Data files dock
     auto *filesDock = new QDockWidget(tr("Data Files"), this);
@@ -364,7 +375,8 @@ void MainWindow::buildUi()
     probDock->setObjectName(QStringLiteral("problemsDock"));
     auto *pw = new QWidget(probDock);
     auto *pl = new QVBoxLayout(pw);
-    pl->setContentsMargins(4, 2, 4, 4);
+    pl->setContentsMargins(10, 6, 10, 10);
+    pl->setSpacing(Theme::FieldSpacing);
     auto *ph = new QHBoxLayout();
     m_problemSummary = new QLabel(pw);
     ph->addWidget(m_problemSummary, 1);
@@ -433,6 +445,7 @@ void MainWindow::updateActions()
     m_actUp->setEnabled(multi && row > 0);
     m_actDown->setEnabled(multi && row >= 0 && row < m_doc->count() - 1);
     m_actLink->setEnabled(m_doc != nullptr);
+    m_changeClassButton->setEnabled(m_doc != nullptr);
     m_actPoly->setEnabled(open);
     m_actReload->setEnabled(open);
     m_actFixAll->setEnabled(linked);
@@ -455,8 +468,8 @@ void MainWindow::updateDocHeader()
     case JsonDocument::Shape::Array: shape = tr("array"); break;
     case JsonDocument::Shape::Single: shape = tr("single object"); break;
     }
-    m_docHeader->setText(QStringLiteral("<b>%1</b>%2<br><span style='color:gray'>%3 · %4 · %5</span>")
-                             .arg(m_doc->fileName().toHtmlEscaped(), m_doc->isModified() ? QStringLiteral("*") : QString(),
+    m_docHeader->setText(QStringLiteral("<span style='font-size:large; font-weight:bold'>%1%2</span><br><span style='color:gray'>%3 · %4 · %5</span>")
+                             .arg(m_doc->fileName().toHtmlEscaped(), m_doc->isModified() ? QStringLiteral(" *") : QString(),
                                   cls, shape, tr("%n item(s)", nullptr, m_doc->count())));
 }
 
@@ -688,6 +701,66 @@ void MainWindow::showDocument(JsonDocument *doc)
     updateDocHeader();
     updateTitle();
     updateActions();
+    if (doc)
+        QTimer::singleShot(0, this, [this, doc = QPointer<JsonDocument>(doc)] { checkWrongClass(doc); });
+}
+
+void MainWindow::changeClass()
+{
+    if (m_doc && linkDocument(m_doc))
+        showDocument(m_doc);
+}
+
+void MainWindow::checkWrongClass(JsonDocument *doc)
+{
+    if (!doc || doc != m_doc || doc->count() == 0 || QApplication::activeModalWidget())
+        return;
+    const QString cls = doc->link().classKey;
+    if (cls.isEmpty() || !m_project->registry().get(cls))
+        return;
+    const QString key = doc->resPath() + QLatin1Char('|') + cls;
+    if (m_wrongClassDismissed.contains(key))
+        return;
+
+    Validator val(m_project->schema());
+    QString example;
+    for (int i = 0; i < doc->count(); ++i) {
+        bool failed = false;
+        for (const Issue &is : val.validateItem(doc->item(i).value, cls, i, doc->link().keyField)) {
+            if (!is.error)
+                continue;
+            failed = true;
+            if (example.isEmpty())
+                example = QStringLiteral("%1 › %2: %3")
+                              .arg(doc->itemTitle(i), is.path.isEmpty() ? tr("(item)") : pathToString(is.path), is.message);
+            break;
+        }
+        if (!failed)
+            return; // at least one item matches the class: it is probably the right one
+    }
+
+    const QString clsName = m_project->schema().displayName(cls);
+    QMessageBox box(QMessageBox::Question, tr("Wrong class?"),
+                    tr("<p><b>None of the %n item(s) in %1 match %2.</b></p>"
+                       "<p>Every item has at least one value the class does not accept, for example:</p>"
+                       "<p><code>%3</code></p>"
+                       "<p>Did you select the wrong class for this file?</p>",
+                       nullptr, doc->count())
+                        .arg(doc->fileName().toHtmlEscaped(), clsName.toHtmlEscaped(), example.toHtmlEscaped()),
+                    QMessageBox::NoButton, this);
+    box.setTextFormat(Qt::RichText);
+    QPushButton *choose = box.addButton(tr("Choose Another Class…"), QMessageBox::AcceptRole);
+    box.addButton(tr("Keep %1").arg(clsName), QMessageBox::RejectRole);
+    box.setDefaultButton(choose);
+    box.exec();
+    if (box.clickedButton() == choose) {
+        if (linkDocument(doc)) {
+            showDocument(doc); // checks the new class again
+            return;
+        }
+    }
+    // Do not ask again for this file and class during this session.
+    m_wrongClassDismissed.insert(key);
 }
 
 void MainWindow::rebuildAddMenu()

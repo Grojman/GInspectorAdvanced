@@ -68,6 +68,7 @@ bool ProjectConfig::save(QString *error) const
     doc.set(QStringLiteral("version"), JValue(1));
 
     JValue settings = JValue::object();
+    settings.setLayout(JValue::LayoutInline);
     settings.set(QStringLiteral("vector_format"), JValue(ValueFormat::vectorName(format.vector)));
     settings.set(QStringLiteral("color_format"), JValue(ValueFormat::colorName(format.color)));
     settings.set(QStringLiteral("include_private_vars"), JValue(includePrivate));

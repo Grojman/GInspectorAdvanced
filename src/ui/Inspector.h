@@ -35,6 +35,8 @@ public:
 
 signals:
     void statusMessage(const QString &text);
+    // The user asked to link the JSON file to a different class.
+    void changeClassRequested();
 
 private:
     struct Row

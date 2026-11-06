@@ -40,6 +40,8 @@ Runs on **Windows and Linux** (Qt 6 / C++17).
   - values that are not stored in the JSON are shown greyed out with the class default. The ↺ button removes
     a value again, so the class default applies.
 - **Restrictions enforced by the editors**: the UI cannot produce a value the class would reject.
+- **Wrong class detection**: if every item of a file fails validation, you are asked whether the linked class
+  is the right one.
 - **Problems panel**: lists every unknown field, wrong type, value out of range or invalid option in the file.
   Double-click a problem to jump to the field. **Fix All** repairs the whole file in one undoable step.
 - **Add / duplicate / delete / reorder items**, full **undo/redo** (Ctrl+Z / Ctrl+Y). Consecutive edits of one
@@ -131,8 +133,14 @@ how the items are stored. The app detects this for you:
 For dictionaries, **Key fills field** names the class variable that gets the key when your game loads the file
 (often `id`). That field is hidden from the inspector and reported if it is repeated inside an item.
 
-Press **Link**. The link is saved to `ginspector.json`, and you can change it later with
-*Project ▸ Link JSON to Class…* (Ctrl+L).
+Press **Link**. The link is saved to `ginspector.json`. To change it later, use the **Change Class…** button
+above the cards or in the inspector's *Class* row, the toolbar button, or *Project ▸ Change Class…* (Ctrl+L).
+
+If **no item** of the file matches the chosen class (every item has at least one error), the app asks whether
+you selected the wrong class. You can then pick another one, or keep the current class. In that case it won't
+ask again for that file during the session.
+
+![Wrong class prompt](docs/wrong_class.png)
 
 ### 4. Edit
 
@@ -251,7 +259,8 @@ Godot ignores `ginspector.json` and the `.bak` copies unless your code loads the
 
 - `data/items.json`: dictionary of `ItemData` with enums, ranges, flags, file paths, colors, a nested `Stats`
   and polymorphic `effects` (including an effect inside an effect);
-- `data/broken_items.json`: an item that breaks every rule, to see the Problems panel and *Fix All*;
+- `data/broken_items.json`: a valid item and an item that breaks every rule, to see the Problems panel and
+  *Fix All*. Link `data/weapons.json` to `ItemData` to see the wrong-class prompt;
 - `data/enemies.json` (array) and `data/weapons.json` (C# `WeaponData`) are **not linked**, to try the class
   picker.
 
@@ -275,7 +284,7 @@ Godot ignores `ginspector.json` and the `.bak` copies unless your code loads the
 ```
 src/core/     JSON value with ordered keys, parser and layout-preserving writer
 src/model/    GDScript & C# parsers, class registry, schema, validator, documents, undo commands, project
-src/ui/       main window, card list, inspector, dialogs
+src/ui/       main window, card list, inspector, dialogs, theme (fonts, spacing, stylesheet)
 resources/    icon (SVG/PNG/ICO), bundled built-in classes, desktop entry, Windows .rc
 tests/        unit tests (Qt Test)
 examples/     demo Godot project

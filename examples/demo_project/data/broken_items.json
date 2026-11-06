@@ -1,4 +1,10 @@
 {
+	"plain_boots": {
+		"display_name": "Plain Boots",
+		"icon": "res://assets/items/boots.png",
+		"category": "Armor",
+		"stats": {"armor": 2}
+	},
 	"cursed_boots": {
 		"display_name": "Cursed Boots",
 		"icon": "res://assets/items/boots.pnj",
