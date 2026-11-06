@@ -1,0 +1,4 @@
+{
+	"sword": {"DisplayName": "Sword", "Damage": 12, "Cooldown": 0.5, "Type": 0, "Icon": "res://assets/items/sword.png"},
+	"fire_staff": {"DisplayName": "Fire Staff", "Damage": 20, "Cooldown": 1.5, "Type": 1, "Trail": "#ff8000"}
+}

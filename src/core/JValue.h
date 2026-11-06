@@ -65,6 +65,8 @@ public:
     // Objects
     bool contains(const QString &key) const;
     JValue value(const QString &key) const; // Undefined if missing
+    // Reference to the member (or to a shared Undefined): safe in range-for loops.
+    const JValue &ref(const QString &key) const;
     JValue *find(const QString &key);
     const JValue *find(const QString &key) const;
     void set(const QString &key, const JValue &v); // keeps position, appends if new

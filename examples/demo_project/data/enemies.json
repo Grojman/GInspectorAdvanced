@@ -1,0 +1,5 @@
+[
+	{"name": "Slime", "health": 12, "speed": 60.0, "behavior": 0, "body_size": [12, 8], "loot": {"gel": 0.8}},
+	{"name": "Archer", "health": 20, "speed": 90.0, "behavior": 1, "body_size": [10, 16]},
+	{"name": "Boar", "health": 35, "speed": 160.0, "behavior": 2, "body_size": [20, 12], "loot": {"meat": 1.0, "tusk": 0.2}}
+]

@@ -1,0 +1,43 @@
+{
+	"iron_sword": {
+		"display_name": "Iron Sword",
+		"description": "A trusty blade.",
+		"icon": "res://assets/items/sword.png",
+		"rarity": 0,
+		"price": 25,
+		"category": "Weapon",
+		"stats": {"damage": 8, "attack_speed": 1.2},
+		"effects": [
+			{"type": "knockback", "force": 150}
+		]
+	},
+	"oak_shield": {
+		"display_name": "Oak Shield",
+		"icon": "res://assets/items/shield.png",
+		"rarity": 1,
+		"price": 30,
+		"category": "Armor",
+		"stats": {"armor": 12, "move_speed_bonus": -5}
+	},
+	"rage_potion": {
+		"display_name": "Rage Potion",
+		"icon": "res://assets/items/potion.png",
+		"rarity": 2,
+		"category": "Consumable",
+		"stack_size": 5,
+		"tint": "#ff4040",
+		"effects": [
+			{"type": "alter_stat", "stat": "attack_speed", "multiplier": 1.5},
+			{"type": "grant_attack", "effect": {"type": "knockback", "force": 300}, "chance": 0.15}
+		]
+	},
+	"lucky_ring": {
+		"display_name": "Lucky Ring",
+		"icon": "res://assets/items/ring.png",
+		"rarity": 10,
+		"price": 120,
+		"elements": 5,
+		"tags": ["luck", "gold"],
+		"drop_chance": 0.05
+	}
+}

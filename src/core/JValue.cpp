@@ -80,6 +80,12 @@ JValue JValue::value(const QString &key) const
     return i < 0 ? JValue() : m_obj[size_t(i)].value;
 }
 
+const JValue &JValue::ref(const QString &key) const
+{
+    const JValue *v = find(key);
+    return v ? *v : s_undefined;
+}
+
 JValue *JValue::find(const QString &key)
 {
     const int i = indexOfKey(key);

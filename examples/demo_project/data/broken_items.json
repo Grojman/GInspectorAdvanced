@@ -1,0 +1,15 @@
+{
+	"cursed_boots": {
+		"display_name": "Cursed Boots",
+		"icon": "res://assets/items/boots.pnj",
+		"rarity": 7,
+		"price": -10,
+		"drop_chance": 3.5,
+		"category": "Shoes",
+		"weight": 4,
+		"stats": {"damage": "lots", "speed": 2},
+		"effects": [
+			{"type": "teleport", "distance": 5}
+		]
+	}
+}
