@@ -559,8 +559,7 @@ bool MainWindow::openProject(const QString &root)
                                 int(m_project->registry().scriptClasses().size()))
                                  .arg(m_project->name()),
                              6000);
-    // Startup flow: ask for a JSON file (then for its class if it has none).
-    QTimer::singleShot(0, this, &MainWindow::chooseJson);
+    // No JSON file is opened automatically: pick one in the Files panel or with File ▸ Open JSON.
     return true;
 }
 

@@ -112,8 +112,9 @@ the start page and in *File ▸ Recent Projects*. You can also pass the folder o
 
 ### 2. Select a JSON file
 
-A dialog lists every `.json` of the project (except `.godot/`, hidden folders and `addons/`) and the class it is
-linked to. The **Data Files** panel on the left lets you switch files at any time.
+Opening a project does not open any file by itself. Click a file in the **Data Files** panel on the left, which
+lists every `.json` of the project (except `.godot/`, hidden folders and `addons/`) and the class it is linked to.
+You can also use *File ▸ Open JSON File…*. You can switch files at any time.
 
 ### 3. Select its class (first time only)
 

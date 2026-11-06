@@ -238,7 +238,9 @@ void Inspector::rebuild()
     layout->setSpacing(Theme::SectionSpacing);
 
     if (!m_doc || m_item < 0 || m_item >= m_doc->count()) {
-        auto *l = new QLabel(m_doc ? tr("Select an item to edit its values.") : tr("No JSON file opened."), content);
+        auto *l = new QLabel(m_doc ? tr("Select an item to edit its values.")
+                                   : tr("No JSON file opened.\nPick one in the Files panel or with File ▸ Open JSON…"),
+                             content);
         l->setAlignment(Qt::AlignCenter);
         l->setObjectName(QStringLiteral("dimLabel"));
         layout->addStretch(1);
