@@ -230,6 +230,14 @@ void ClassPickerDialog::fill()
         delete cs;
     if (!keep.isEmpty())
         selectKey(keep);
+    if (currentKey().isEmpty() && !needle.isEmpty()) {
+        // Select the first match so its fields are shown right away.
+        for (QTreeWidgetItemIterator it(m_tree); *it; ++it)
+            if (!(*it)->data(0, Qt::UserRole).toString().isEmpty()) {
+                m_tree->setCurrentItem(*it);
+                break;
+            }
+    }
 }
 
 void ClassPickerDialog::updateDetails()
