@@ -1,0 +1,419 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>GInspectorAdvanced · Editor visual de JSON para Godot 4</title>
+  <meta name="description" content="Edita los archivos JSON de tu proyecto Godot 4 con un inspector que conoce tus clases GDScript y C#. Gratis para Windows y Linux.">
+  <link rel="icon" type="image/svg+xml" href="assets/icon.svg">
+  <link rel="alternate" hreflang="es" href="./">
+  <link rel="alternate" hreflang="en" href="en/">
+  <meta property="og:title" content="GInspectorAdvanced">
+  <meta property="og:description" content="El inspector de Godot, para tus archivos JSON.">
+  <meta property="og:image" content="assets/img/main-light.png">
+  <meta name="theme-color" content="#478cbf">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+
+<header class="site-header">
+  <div class="wrap">
+    <a class="brand" href="#"><img src="assets/icon.svg" alt="">GInspectorAdvanced</a>
+    <nav class="nav">
+      <a href="#que-es">Qué es</a>
+      <a href="#como-funciona">Cómo funciona</a>
+      <a href="#caracteristicas">Características</a>
+      <a href="#descargar">Descargar</a>
+      <a class="gh" href="https://github.com/Grojman/GInspectorAdvanced">GitHub</a>
+      <a class="lang" href="en/" hreflang="en" lang="en" title="Read this page in English">EN</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <!-- HERO -->
+  <section class="hero">
+    <div class="wrap hero-grid">
+      <div>
+        <img class="hero-logo" src="assets/icon.svg" alt="Icono de GInspectorAdvanced">
+        <div class="eyebrow">Para Godot 4 · GDScript y C#</div>
+        <h1>El inspector de Godot,<br><span class="grad">para tus archivos JSON</span></h1>
+        <p class="lead">GInspectorAdvanced es un editor visual para los datos JSON de tu juego: objetos, enemigos,
+          diálogos, niveles… Enlazas cada archivo con la clase que lo describe y lo editas con un inspector
+          que respeta tipos, rangos y enums. El JSON siempre coincide con la clase que lo va a cargar.</p>
+        <div class="cta">
+          <a class="btn btn-primary" href="https://github.com/Grojman/GInspectorAdvanced/releases/latest/download/GInspectorAdvanced-windows-x64.zip">
+            <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M3 5.5 10.5 4.5v7H3zM11.5 4.4 21 3v8.5h-9.5zM3 12.5h7.5v7L3 18.5zM11.5 12.5H21V21l-9.5-1.4z"/></svg>
+            <span>Descargar para Windows<small>.zip · 64 bits</small></span>
+          </a>
+          <a class="btn btn-primary" href="https://github.com/Grojman/GInspectorAdvanced/releases/latest/download/GInspectorAdvanced-linux-x86_64.AppImage">
+            <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2c-2.2 0-3.6 1.9-3.6 4.6 0 1.4.3 2.3-.5 3.6-.9 1.4-3.2 3.9-3.2 6.6 0 .8.2 1.5.6 2.1-.4.4-1.3.7-1.3 1.5 0 .9 1.3 1.1 2.7 1.3 1 .1 1.9.5 2.6.5.7 0 1.2-.4 1.6-.9h2.2c.4.5.9.9 1.6.9.7 0 1.6-.4 2.6-.5 1.4-.2 2.7-.4 2.7-1.3 0-.8-.9-1.1-1.3-1.5.4-.6.6-1.3.6-2.1 0-2.7-2.3-5.2-3.2-6.6-.8-1.3-.5-2.2-.5-3.6C15.6 3.9 14.2 2 12 2zm-1.6 4c.5 0 .8.6.8 1.3s-.3 1.2-.8 1.2-.8-.5-.8-1.2.3-1.3.8-1.3zm3.2 0c.5 0 .8.6.8 1.3s-.3 1.2-.8 1.2-.8-.5-.8-1.2.3-1.3.8-1.3zM12 9.2c.9 0 2 .6 2 1.1 0 .4-1.1 1.1-2 1.1s-2-.7-2-1.1c0-.5 1.1-1.1 2-1.1z"/></svg>
+            <span>Descargar para Linux<small>AppImage · x86_64</small></span>
+          </a>
+          <a class="btn" href="https://github.com/Grojman/GInspectorAdvanced">
+            <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 .5a11.5 11.5 0 0 0-3.6 22.4c.6.1.8-.3.8-.6v-2c-3.2.7-3.9-1.5-3.9-1.5-.5-1.3-1.3-1.7-1.3-1.7-1-.7.1-.7.1-.7 1.2.1 1.8 1.2 1.8 1.2 1 1.8 2.8 1.3 3.5 1 .1-.8.4-1.3.7-1.6-2.6-.3-5.3-1.3-5.3-5.7 0-1.3.5-2.3 1.2-3.1-.1-.3-.5-1.5.1-3.1 0 0 1-.3 3.2 1.2a11 11 0 0 1 5.8 0c2.2-1.5 3.2-1.2 3.2-1.2.6 1.6.2 2.8.1 3.1.8.8 1.2 1.8 1.2 3.1 0 4.4-2.7 5.4-5.3 5.7.4.4.8 1.1.8 2.2v3.2c0 .3.2.7.8.6A11.5 11.5 0 0 0 12 .5z"/></svg>
+            <span>Código fuente</span>
+          </a>
+        </div>
+        <div class="meta"><span>Gratis</span><span>Windows y Linux</span><span>Sin plugins en tu proyecto</span><span>Qt 6 · C++17</span></div>
+      </div>
+      <div class="window">
+        <div class="window-bar"><i></i><i></i><i></i><b>items.json — GInspectorAdvanced</b></div>
+        <picture>
+          <source srcset="assets/img/main-dark.png" media="(prefers-color-scheme: dark)">
+          <img src="assets/img/main-light.png" width="1400" height="900" alt="Ventana principal: lista de archivos JSON, tarjetas con cada objeto y el inspector con los campos de la clase ItemData">
+        </picture>
+      </div>
+    </div>
+  </section>
+
+  <!-- QUÉ ES -->
+  <section id="que-es" class="alt">
+    <div class="wrap">
+      <div class="section-head">
+        <div class="kicker">Qué es</div>
+        <h2>Tus datos en JSON, con la comodidad del inspector</h2>
+        <p>Muchos juegos guardan sus datos en JSON porque es fácil de leer y de versionar. Pero editarlo a mano
+          es lento y es muy fácil escribir un campo mal, un número fuera de rango o un valor de enum que no existe.
+          GInspectorAdvanced lee tus scripts y te da un formulario hecho a medida.</p>
+      </div>
+
+      <div class="pillars">
+        <div class="pillar">
+          <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3H6a2 2 0 0 0-2 2v4a2 2 0 0 1-2 2 2 2 0 0 1 2 2v4a2 2 0 0 0 2 2h2M16 3h2a2 2 0 0 1 2 2v4a2 2 0 0 0 2 2 2 2 0 0 0-2 2v4a2 2 0 0 1-2 2h-2"/></svg></div>
+          <h3>Entiende tus clases</h3>
+          <p>Analiza los <code>.gd</code> y <code>.cs</code> del proyecto: variables <code>@export</code>, tipos, enums,
+            herencia, clases internas y anotaciones como <code>@export_range</code> o <code>@export_file</code>.</p>
+        </div>
+        <div class="pillar">
+          <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg></div>
+          <h3>Imposible guardar datos inválidos</h3>
+          <p>Cada editor aplica las restricciones de la clase, así que la interfaz no puede producir un valor que tu
+            juego rechazaría. Lo que ya estaba mal se marca en rojo y se arregla con un clic.</p>
+        </div>
+        <div class="pillar">
+          <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M9 15h6M9 18h4"/></svg></div>
+          <h3>Respeta tu archivo</h3>
+          <p>Al guardar conserva el orden de las claves, la indentación (tabs o espacios), <code>2</code> frente a
+            <code>2.0</code> y los objetos escritos en una línea. Los diffs de Git quedan limpios.</p>
+        </div>
+      </div>
+
+      <div class="mapping">
+        <div class="code">
+          <div class="code-title"><span>scripts/item_data.gd</span><span>GDScript</span></div>
+<pre><span class="tk-k">class_name</span> <span class="tk-t">ItemData</span>
+<span class="tk-k">extends</span> <span class="tk-t">Resource</span>
+
+<span class="tk-k">enum</span> <span class="tk-t">Rarity</span> { COMMON, UNCOMMON, RARE, LEGENDARY = <span class="tk-n">10</span> }
+
+<span class="tk-a">@export</span> <span class="tk-k">var</span> display_name: <span class="tk-t">String</span> = <span class="tk-s">"Unnamed"</span>
+<span class="tk-a">@export_file</span>(<span class="tk-s">"*.png"</span>, <span class="tk-s">"*.svg"</span>) <span class="tk-k">var</span> icon: <span class="tk-t">String</span>
+<span class="tk-a">@export</span> <span class="tk-k">var</span> rarity: <span class="tk-t">Rarity</span> = Rarity.COMMON
+<span class="tk-a">@export_range</span>(<span class="tk-n">0</span>, <span class="tk-n">999</span>, <span class="tk-n">1</span>, <span class="tk-s">"or_greater"</span>) <span class="tk-k">var</span> price := <span class="tk-n">15</span>
+<span class="tk-a">@export_range</span>(<span class="tk-n">0.0</span>, <span class="tk-n">1.0</span>, <span class="tk-n">0.05</span>) <span class="tk-k">var</span> drop_chance := <span class="tk-n">0.25</span>
+<span class="tk-a">@export</span> <span class="tk-k">var</span> tint := <span class="tk-t">Color</span>(<span class="tk-n">1</span>, <span class="tk-n">1</span>, <span class="tk-n">1</span>)
+<span class="tk-a">@export</span> <span class="tk-k">var</span> stats: <span class="tk-t">Stats</span>
+<span class="tk-a">@export</span> <span class="tk-k">var</span> effects: <span class="tk-t">Array</span>[<span class="tk-t">ItemEffect</span>] = []</pre>
+        </div>
+        <div class="arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></div>
+        <div class="code">
+          <div class="code-title"><span>data/items.json</span><span>siempre válido</span></div>
+<pre>{
+  <span class="tk-p">"rage_potion"</span>: {
+    <span class="tk-p">"display_name"</span>: <span class="tk-s">"Rage Potion"</span>,
+    <span class="tk-p">"icon"</span>: <span class="tk-s">"res://assets/items/potion.png"</span>,
+    <span class="tk-p">"rarity"</span>: <span class="tk-n">2</span>,            <span class="tk-c">// combo: RARE</span>
+    <span class="tk-p">"price"</span>: <span class="tk-n">15</span>,             <span class="tk-c">// 0 – 999+</span>
+    <span class="tk-p">"drop_chance"</span>: <span class="tk-n">0.25</span>,     <span class="tk-c">// deslizador 0 – 1</span>
+    <span class="tk-p">"tint"</span>: <span class="tk-s">"#ff4040"</span>,       <span class="tk-c">// selector de color</span>
+    <span class="tk-p">"stats"</span>: { <span class="tk-p">"damage"</span>: <span class="tk-n">4</span> },
+    <span class="tk-p">"effects"</span>: [
+      { <span class="tk-p">"type"</span>: <span class="tk-s">"alter_stat"</span>, … }
+    ]
+  }
+}</pre>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CÓMO FUNCIONA -->
+  <section id="como-funciona">
+    <div class="wrap">
+      <div class="section-head">
+        <div class="kicker">Cómo funciona</div>
+        <h2>De tu proyecto a datos editables en cuatro pasos</h2>
+        <p>No hay que instalar nada en el proyecto de Godot ni cambiar tu código. Solo abres la carpeta.</p>
+      </div>
+
+      <div class="steps">
+        <div class="step">
+          <div class="step-text">
+            <div class="step-num">1</div>
+            <h3>Abre tu proyecto de Godot</h3>
+            <p>Usa <em>File ▸ Open Godot Project…</em> y elige la carpeta que contiene <code>project.godot</code>.
+              Se analizan todos los scripts <code>.gd</code> y <code>.cs</code> en busca de clases.</p>
+            <p>El panel <strong>Data Files</strong> lista cada <code>.json</code> del proyecto junto a la clase que tiene enlazada.
+              Los proyectos recientes aparecen en la pantalla de inicio.</p>
+          </div>
+          <div class="window">
+            <div class="window-bar"><i></i><i></i><i></i><b>Pantalla de inicio</b></div>
+            <picture>
+              <source srcset="assets/img/welcome-dark.png" media="(prefers-color-scheme: dark)">
+              <img src="assets/img/welcome-light.png" width="1400" height="900" loading="lazy" alt="Pantalla de inicio con el botón Open Godot Project y la lista de proyectos recientes">
+            </picture>
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="step-text">
+            <div class="step-num">2</div>
+            <h3>Enlaza el JSON con su clase (solo una vez)</h3>
+            <p>Al abrir un archivo sin enlazar aparece el selector de clases. Puedes elegir:</p>
+            <ul>
+              <li><strong>Clases del proyecto</strong>: GDScript (con o sin <code>class_name</code>), clases internas y C#.</li>
+              <li><strong>Clases integradas de Godot</strong>: <code>Resource</code>, <code>Node2D</code>…</li>
+              <li><strong>Cualquier script</strong>, incluso fuera del proyecto.</li>
+              <li><strong>Edit as Plain JSON</strong>, para archivos que no son objetos de una clase.</li>
+            </ul>
+            <p>A la derecha ves la vista previa de los campos permitidos. La disposición (diccionario, array u objeto
+              único) se detecta sola. El enlace se guarda en <code>ginspector.json</code>.</p>
+          </div>
+          <div class="window">
+            <div class="window-bar"><i></i><i></i><i></i><b>Selector de clase</b></div>
+            <picture>
+              <source srcset="assets/img/class_picker-dark.png" media="(prefers-color-scheme: dark)">
+              <img src="assets/img/class_picker-light.png" width="1100" height="640" loading="lazy" alt="Diálogo para elegir la clase de enemies.json con la vista previa de los campos de EnemyData">
+            </picture>
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="step-text">
+            <div class="step-num">3</div>
+            <h3>Edita con un inspector a medida</h3>
+            <p>Cada elemento del archivo es una <strong>tarjeta</strong> con miniatura, título y resumen. Al hacer clic se abre
+              en el inspector, organizado como el de Godot:</p>
+            <ul>
+              <li>Una sección por clase de la cadena de herencia, con <code>@export_group</code> y subgrupos.</li>
+              <li><strong>Composición</strong>: un campo de tipo <code>Stats</code> abre una sección anidada.</li>
+              <li><strong>Polimorfismo</strong>: si el campo es una clase base, eliges la subclase en un combo.</li>
+              <li>Arrays y diccionarios tipados con añadir, duplicar, reordenar y eliminar.</li>
+              <li>Los campos en gris no están en el JSON y usan el valor por defecto de la clase.</li>
+            </ul>
+          </div>
+          <div class="window">
+            <div class="window-bar"><i></i><i></i><i></i><b>Objetos anidados y polimórficos</b></div>
+            <picture>
+              <source srcset="assets/img/nested-dark.png" media="(prefers-color-scheme: dark)">
+              <img src="assets/img/nested-light.png" width="1400" height="900" loading="lazy" alt="Inspector mostrando un array de efectos con un KnockbackEffect elegido como subclase">
+            </picture>
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="step-text">
+            <div class="step-num">4</div>
+            <h3>Encuentra y arregla los errores</h3>
+            <p>El panel <strong>Problems</strong> lista cada campo desconocido, tipo incorrecto, valor fuera de rango u opción
+              inválida. Doble clic para saltar al campo; <strong>Fix All Problems…</strong> repara el archivo entero en un solo paso
+              que se puede deshacer.</p>
+            <p>Si cambias tus scripts en Godot, al volver a la ventana se recargan solos y los campos que ya no existen
+              aparecen en rojo para borrarlos.</p>
+          </div>
+          <div class="window">
+            <div class="window-bar"><i></i><i></i><i></i><b>Panel de problemas</b></div>
+            <picture>
+              <source srcset="assets/img/problems-dark.png" media="(prefers-color-scheme: dark)">
+              <img src="assets/img/problems-light.png" width="1400" height="900" loading="lazy" alt="Un objeto con 10 errores marcado en rojo y la lista de problemas debajo">
+            </picture>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CARACTERÍSTICAS -->
+  <section id="caracteristicas" class="alt">
+    <div class="wrap">
+      <div class="section-head">
+        <div class="kicker">Características</div>
+        <h2>Todo lo que necesitas para mantener tus datos</h2>
+      </div>
+      <div class="features">
+        <div class="feature"><div class="ico">🧩</div><h3>GDScript y C#</h3><p><code>@export</code> y <code>[Export]</code>, <code>class_name</code>, clases internas (<code>Outer.Inner</code>), scripts referenciados por ruta y clases integradas de Godot.</p></div>
+        <div class="feature"><div class="ico">🎚️</div><h3>Restricciones reales</h3><p>Rangos, <code>or_greater</code>, sufijos, enums, flags, filtros de archivo, texto multilínea, placeholders, colores sin alfa…</p></div>
+        <div class="feature"><div class="ico">🃏</div><h3>Tarjetas con miniatura</h3><p>Imagen tomada de cualquier ruta <code>res://</code> del objeto, insignia con el número de errores, búsqueda y filtro.</p></div>
+        <div class="feature"><div class="ico">🧬</div><h3>Herencia y polimorfismo</h3><p>Elige la subclase en un combo; se guarda como <code>"type": "alter_stat"</code>. Clave y valores configurables.</p></div>
+        <div class="feature"><div class="ico">↩️</div><h3>Deshacer / rehacer completo</h3><p><kbd>Ctrl</kbd>+<kbd>Z</kbd> / <kbd>Ctrl</kbd>+<kbd>Y</kbd>. Las ediciones seguidas de un mismo campo se agrupan en un solo paso.</p></div>
+        <div class="feature"><div class="ico">💾</div><h3>Guardado seguro</h3><p>Conserva formato, orden e indentación, y escribe una copia <code>.bak</code> antes de guardar (desactivable).</p></div>
+        <div class="feature"><div class="ico">🔄</div><h3>Cambios externos</h3><p>Los scripts editados se recargan al volver a la ventana. Si el JSON cambia en disco, se recarga (preguntando si tienes cambios).</p></div>
+        <div class="feature"><div class="ico">❓</div><h3>Detección de clase errónea</h3><p>Si ningún objeto del archivo encaja con la clase elegida, te pregunta si te has equivocado de clase.</p></div>
+        <div class="feature"><div class="ico">📄</div><h3>Modo JSON plano</h3><p>Para ajustes, traducciones o listas: edita cualquier valor con su tipo JSON, sin clase ni comprobaciones.</p></div>
+        <div class="feature"><div class="ico">🤝</div><h3>Pensado para equipos</h3><p><code>ginspector.json</code> guarda qué JSON va con qué clase. Súbelo al repositorio y todo el equipo comparte los enlaces.</p></div>
+        <div class="feature"><div class="ico">🤖</div><h3>API exacta de tu Godot</h3><p>Opcional: indica tu ejecutable de Godot para leer todas las clases integradas de tu versión (<code>--dump-extension-api</code>).</p></div>
+        <div class="feature"><div class="ico">🌗</div><h3>Tema claro u oscuro</h3><p>Usa la paleta de tu sistema y funciona igual en Windows y en Linux.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- RESTRICCIONES -->
+  <section id="restricciones">
+    <div class="wrap">
+      <div class="section-head">
+        <div class="kicker">Del script al editor</div>
+        <h2>Cada tipo tiene su control</h2>
+        <p>Lo que declaras en el script decide qué control aparece y qué se valida.</p>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>En el script</th><th>En el inspector</th><th>Se valida</th></tr></thead>
+          <tbody>
+            <tr><td><code>bool</code></td><td>Casilla</td><td>debe ser <code>true</code>/<code>false</code></td></tr>
+            <tr><td><code>int</code>, <code>float</code></td><td>Campo numérico</td><td>número (entero para <code>int</code>)</td></tr>
+            <tr><td><code>@export_range(0, 100, 5)</code></td><td>Deslizador + campo, limitado al rango</td><td>fuera de rango</td></tr>
+            <tr><td><code>enum Rarity {…}</code>, <code>@export_enum("A", "B")</code></td><td>Combo con los nombres</td><td>valor que no está en el enum</td></tr>
+            <tr><td><code>@export_flags("Fire", "Water")</code></td><td>Casillas</td><td>bits que no existen</td></tr>
+            <tr><td><code>@export_file("*.png")</code>, <code>@export_dir</code></td><td>Ruta + examinar (dentro del proyecto)</td><td>extensión; aviso si falta el archivo</td></tr>
+            <tr><td><code>Vector2/3/4</code>, <code>Rect2</code></td><td>Campos x / y / z / w</td><td><code>[x, y]</code>, <code>{"x":…}</code> o <code>"(x, y)"</code></td></tr>
+            <tr><td><code>Color</code></td><td>Selector de color + hex</td><td><code>"#rrggbb(aa)"</code>, <code>[r,g,b]</code> o <code>{"r":…}</code></td></tr>
+            <tr><td><code>Texture2D</code>, <code>AudioStream</code>, <code>PackedScene</code>…</td><td>Ruta <code>res://</code> con vista previa</td><td>debe ser una ruta</td></tr>
+            <tr><td>Tu clase (<code>var stats: Stats</code>)</td><td>Sección anidada</td><td>cada campo anidado</td></tr>
+            <tr><td><code>Array[T]</code>, <code>PackedXArray</code>, <code>Dictionary[K, V]</code></td><td>Editor de lista / clave-valor</td><td>cada elemento</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- DESCARGAR -->
+  <section id="descargar" class="alt">
+    <div class="wrap">
+      <div class="section-head">
+        <div class="kicker">Descargar e instalar</div>
+        <h2>Listo en un minuto</h2>
+        <p>Descarga la última versión para tu sistema. No requiere instalar Qt ni nada más.
+          Todas las versiones están en <a href="https://github.com/Grojman/GInspectorAdvanced/releases">Releases</a>.</p>
+      </div>
+
+      <div class="downloads">
+        <div class="dl">
+          <div class="dl-head">
+            <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M3 5.5 10.5 4.5v7H3zM11.5 4.4 21 3v8.5h-9.5zM3 12.5h7.5v7L3 18.5zM11.5 12.5H21V21l-9.5-1.4z"/></svg>
+            <div><h3>Windows</h3><p>Windows 10 / 11 · 64 bits</p></div>
+          </div>
+          <ol>
+            <li>Descarga <code>GInspectorAdvanced-windows-x64.zip</code>.</li>
+            <li>Descomprímelo en una carpeta, por ejemplo <code>C:\Herramientas\GInspectorAdvanced</code>.</li>
+            <li>Ejecuta <code>GInspectorAdvanced.exe</code>. Si quieres, crea un acceso directo en el escritorio.</li>
+          </ol>
+          <p class="note">El ejecutable no está firmado. Si SmartScreen muestra un aviso, pulsa <em>Más información ▸ Ejecutar de todas formas</em>.</p>
+          <a class="btn btn-primary" href="https://github.com/Grojman/GInspectorAdvanced/releases/latest/download/GInspectorAdvanced-windows-x64.zip">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12M7 10l5 5 5-5M5 21h14"/></svg>
+            <span>Descargar .zip</span>
+          </a>
+        </div>
+
+        <div class="dl">
+          <div class="dl-head">
+            <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2c-2.2 0-3.6 1.9-3.6 4.6 0 1.4.3 2.3-.5 3.6-.9 1.4-3.2 3.9-3.2 6.6 0 .8.2 1.5.6 2.1-.4.4-1.3.7-1.3 1.5 0 .9 1.3 1.1 2.7 1.3 1 .1 1.9.5 2.6.5.7 0 1.2-.4 1.6-.9h2.2c.4.5.9.9 1.6.9.7 0 1.6-.4 2.6-.5 1.4-.2 2.7-.4 2.7-1.3 0-.8-.9-1.1-1.3-1.5.4-.6.6-1.3.6-2.1 0-2.7-2.3-5.2-3.2-6.6-.8-1.3-.5-2.2-.5-3.6C15.6 3.9 14.2 2 12 2z"/></svg>
+            <div><h3>Linux</h3><p>AppImage · x86_64 · cualquier distribución</p></div>
+          </div>
+          <ol>
+            <li>Descarga <code>GInspectorAdvanced-linux-x86_64.AppImage</code>.</li>
+            <li>Dale permiso de ejecución y ábrelo:</li>
+          </ol>
+<pre class="shell">chmod +x GInspectorAdvanced-linux-x86_64.AppImage
+./GInspectorAdvanced-linux-x86_64.AppImage <span class="c"># o: ./… ruta/a/mi_juego</span></pre>
+          <p class="note">Si tu distribución no trae FUSE 2, instala <code>libfuse2</code> o ejecútalo con
+            <code>--appimage-extract-and-run</code>.</p>
+          <a class="btn btn-primary" href="https://github.com/Grojman/GInspectorAdvanced/releases/latest/download/GInspectorAdvanced-linux-x86_64.AppImage">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12M7 10l5 5 5-5M5 21h14"/></svg>
+            <span>Descargar AppImage</span>
+          </a>
+        </div>
+      </div>
+
+      <details class="source">
+        <summary>Compilar desde el código fuente</summary>
+        <div class="inner">
+          <p>Necesitas <strong>CMake ≥ 3.19</strong>, un compilador <strong>C++17</strong> y <strong>Qt 6.2+</strong> con los módulos <em>Widgets</em> y <em>Svg</em>.</p>
+          <h4>Linux</h4>
+<pre class="shell"><span class="c"># Debian/Ubuntu: sudo apt install build-essential cmake qt6-base-dev libqt6svg6-dev
+# Fedora:        sudo dnf install gcc-c++ cmake qt6-qtbase-devel qt6-qtsvg-devel
+# Arch:          sudo pacman -S base-devel cmake qt6-base qt6-svg</span>
+git clone https://github.com/Grojman/GInspectorAdvanced.git
+cd GInspectorAdvanced
+cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
+cmake --build build -j
+./build/GInspectorAdvanced
+<span class="c"># opcional: entrada en el menú e icono</span>
+sudo cmake --install build</pre>
+          <h4>Windows</h4>
+          <p>Instala Qt 6 con el instalador online (kit MSVC 2022 64 bits o MinGW, con <em>Qt SVG</em>) y, desde un
+            <em>Developer Command Prompt</em>:</p>
+<pre class="shell">cmake -S . -B build -DCMAKE_PREFIX_PATH=C:\Qt\6.8.0\msvc2022_64
+cmake --build build --config Release
+C:\Qt\6.8.0\msvc2022_64\bin\windeployqt.exe build\Release\GInspectorAdvanced.exe</pre>
+          <p>También puedes abrir la carpeta en <strong>Qt Creator</strong> y pulsar <em>Ejecutar</em>.</p>
+        </div>
+      </details>
+    </div>
+  </section>
+
+  <!-- PREGUNTAS -->
+  <section id="preguntas">
+    <div class="wrap">
+      <div class="section-head">
+        <div class="kicker">Preguntas frecuentes</div>
+        <h2>Bueno saberlo</h2>
+      </div>
+      <div class="faq">
+        <div><h3>¿Necesito Godot abierto o un plugin?</h3><p>No. Los scripts se leen como texto, sin ejecutar Godot. La aplicación solo escribe tus JSON y <code>ginspector.json</code>.</p></div>
+        <div><h3>¿Qué es <code>ginspector.json</code>?</h3><p>Un archivo en la raíz del proyecto que guarda qué JSON va enlazado con qué clase y algunos ajustes. Godot lo ignora salvo que tu código lo cargue.</p></div>
+        <div><h3>¿Qué variables puedo editar?</h3><p>Por defecto, solo las exportadas (<code>@export</code> / <code>[Export]</code>), igual que guarda Godot. En <em>Tools ▸ Settings</em> puedes incluir las públicas o todas.</p></div>
+        <div><h3>¿Y si mi cargador renombra claves?</h3><p>Las claves del JSON deben llamarse como las variables. Si tu código traduce <code>"sprite"</code> → <code>icon</code>, esas claves aparecerán como desconocidas.</p></div>
+        <div><h3>¿Acepta comentarios o comas finales?</h3><p>No, igual que el parser de Godot. El JSON tiene que ser estándar.</p></div>
+        <div><h3>¿La aplicación está en español?</h3><p>La interfaz está en inglés. En esta página los menús y botones aparecen con su nombre original, por ejemplo <em>File ▸ Open Godot Project…</em>.</p></div>
+        <div><h3>¿Puedo probarlo sin mi proyecto?</h3><p>Sí: el repositorio incluye <code>examples/demo_project</code> con objetos, enemigos, efectos polimórficos y un archivo con errores a propósito.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="final">
+    <div class="wrap">
+      <div class="box">
+        <h2>Deja de editar JSON a mano</h2>
+        <p>Descarga GInspectorAdvanced, abre tu proyecto de Godot y edita tus datos con la seguridad de que siempre
+          encajan con tus clases.</p>
+        <div class="cta">
+          <a class="btn" href="#descargar">Descargar</a>
+          <a class="btn ghost" href="https://github.com/Grojman/GInspectorAdvanced">Ver en GitHub</a>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <div>
+      <p><strong>GInspectorAdvanced</strong> · Editor visual de JSON para Godot 4.</p>
+      <p>El icono es un dibujo original inspirado en el logo de Godot Engine de Andrea Calabró
+        (<a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>). Godot es una marca de la Godot Foundation;
+        este proyecto no está afiliado a ella.</p>
+    </div>
+    <div>
+      <p><a href="https://github.com/Grojman/GInspectorAdvanced">GitHub</a> · <a href="https://github.com/Grojman/GInspectorAdvanced/issues">Reportar un problema</a> · <a href="en/" hreflang="en">English</a></p>
+    </div>
+  </div>
+</footer>
+
+<dialog class="lightbox" id="lightbox"><img alt=""></dialog>
+<script src="assets/site.js"></script>
+</body>
+</html>

@@ -14,6 +14,8 @@ class that will load it.
 
 Runs on **Windows and Linux** (Qt 6 / C++17).
 
+**Website and downloads:** https://grojman.github.io/GInspectorAdvanced/ ([English](https://grojman.github.io/GInspectorAdvanced/en/))
+
 ![Main window](docs/screenshot.png)
 
 ---

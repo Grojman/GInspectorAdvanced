@@ -1,19 +1,34 @@
 {
 	"_comment": "Created by GInspectorAdvanced. Links JSON data files to the Godot classes that describe them.",
 	"version": 1,
-	"settings": {"vector_format": "array", "color_format": "hex", "include_private_vars": false, "backups": true},
+	"settings": {
+		"vector_format": "array",
+		"color_format": "hex",
+		"include_private_vars": false,
+		"backups": true
+	},
 	"links": {
+		"res://data/broken_items.json": {
+			"class": "ItemData",
+			"script": "res://scripts/item_data.gd",
+			"shape": "dictionary",
+			"key_field": "id"
+		},
+		"res://data/enemies.json": {
+			"class": "EnemyData",
+			"script": "res://scripts/enemy_data.gd",
+			"shape": "array"
+		},
 		"res://data/items.json": {
 			"class": "ItemData",
 			"script": "res://scripts/item_data.gd",
 			"shape": "dictionary",
 			"key_field": "id"
 		},
-		"res://data/broken_items.json": {
-			"class": "ItemData",
-			"script": "res://scripts/item_data.gd",
-			"shape": "dictionary",
-			"key_field": "id"
+		"res://data/weapons.json": {
+			"class": "WeaponData",
+			"script": "res://csharp/WeaponData.cs",
+			"shape": "dictionary"
 		}
 	},
 	"polymorphism": {}
